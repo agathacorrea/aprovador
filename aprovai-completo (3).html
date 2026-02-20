@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">AprovAí</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style id="dynamicStyles"></style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CONFIG & ROUTER
+// ═══════════════════════════════════════════════════════════════════
+
+const CLIENTS = {
+  adara: { id:'adara', name:'Instituto Adara', area:'Centro de Saúde Integrada', prazo:'20 mar', color:'#7c4d8a', icon:'IA', theme:'light-wellness' },
+  renato: { id:'renato', name:'Dr. Renato Andrade', area:'Nutrologia', prazo:'22 mar', color:'#1a4a7a', icon:'DR', theme:'clinical-blue' },
+  cesar: { id:'cesar', name:'Dr. César Prota', area:'Ortopedia', prazo:'25 mar', color:'#8a3a2a', icon:'CP', theme:'dark-premium' },
+  emily: { id:'emily', name:'Emily Robadelli', area:'Estética & Bem-estar', prazo:'28 mar', color:'#d4698d', icon:'ER', theme:'rose-elegant' }
+};
+
+const params = new URLSearchParams(window.location.search);
+const view = params.get('v') || 'dashboard';
+const clientId = params.get('c');
+
+// ═══════════════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════════════
+
+function getData(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
+}
+
+function saveData(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER LOGIC
+// ═══════════════════════════════════════════════════════════════════
+
+if (view === 'dashboard') {
+  renderDashboard();
+} else if (view === 'admin' && clientId && CLIENTS[clientId]) {
+  renderAdmin(CLIENTS[clientId]);
+} else if (view === 'client' && clientId && CLIENTS[clientId]) {
+  renderClient(CLIENTS[clientId]);
+} else {
+  document.getElementById('app').innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif"><h1>404</h1><p>Página não encontrada</p><a href="?v=dashboard">Voltar</a></div>';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════
+
+function renderDashboard() {
+  document.getElementById('pageTitle').textContent = 'AprovAí — Dashboard';
+  
+  document.getElementById('dynamicStyles').textContent = `
+    :root{--bg:#f5f2ee;--ink:#1a1612;--s:#fff;--b:#e2ddd8;--m:#9a9087;--ok:#2d7a4d;--no:#c0392b;--w:#c07820;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+    header{background:var(--ink);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10;}
+    .logo{font-family:'Instrument Serif',serif;font-size:22px;color:#f5f2ee;}
+    .logo em{color:#a8d99c;font-style:italic;}
+    .badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:5px 14px;border-radius:999px;color:#e8e4de;font-size:13px;}
+    .hero{padding:48px 48px 32px;position:relative;z-index:1;}
+    .h-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--m);margin-bottom:12px;}
+    .h-title{font-family:'Instrument Serif',serif;font-size:50px;line-height:1.05;margin-bottom:8px;}
+    .h-title em{font-style:italic;color:#2d5a27;}
+    .h-sub{font-size:15px;color:var(--m);max-width:460px;line-height:1.6;}
+    .sec{padding:0 48px 14px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--m);position:relative;z-index:1;}
+    .grid{padding:0 48px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;position:relative;z-index:1;}
+    .cc{background:var(--s);border:1px solid var(--b);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;}
+    .cc:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.08);}
+    .cc-top{padding:26px 26px 20px;border-bottom:1px solid var(--b);flex:1;}
+    .ic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:18px;margin-bottom:16px;}
+    .cname{font-family:'Instrument Serif',serif;font-size:21px;line-height:1.2;margin-bottom:3px;}
+    .carea{font-size:13px;color:var(--m);margin-bottom:14px;}
+    .sb{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:10px;}
+    .sb-empty{background:#f8f5f0;color:var(--m);}
+    .sb-draft{background:#fff8e8;color:var(--w);}
+    .sb-sent{background:#eaf5ef;color:var(--ok);}
+    .count-badge{font-size:13px;color:var(--m);background:#f8f5f0;padding:6px 12px;border-radius:8px;margin-bottom:10px;}
+    .cc-bot{padding:13px 26px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .btn-link{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Figtree',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;border:none;}
+    .btn-edit{background:#f0ede8;color:var(--ink);border:1px solid var(--b);}
+    .btn-edit:hover{background:var(--ink);color:#fff;}
+    .btn-view{background:transparent;color:var(--m);border:1px solid var(--b);}
+    .btn-view:hover{border-color:var(--ink);color:var(--ink);}
+    @media(max-width:900px){header,.hero,.sec,.grid{padding-left:20px;padding-right:20px;}.h-title{font-size:34px;}}
+  `;
+
+  let cardsHtml = '';
+  Object.values(CLIENTS).forEach(c => {
+    const contentKey = 'content_' + c.id;
+    const content = getData(contentKey) || [];
+    const approvalKey = 'aprovai_' + c.id;
+    const approval = getData(approvalKey);
+    
+    let statusBadge, statusCls;
+    if (content.length === 0) {
+      statusBadge = '📝 Sem conteúdo'; statusCls = 'sb-empty';
+    } else if (approval && approval.submitted) {
+      statusBadge = '✓ Cliente respondeu'; statusCls = 'sb-sent';
+    } else {
+      statusBadge = '📤 Pronto para enviar'; statusCls = 'sb-draft';
+    }
+
+    const borderTop = c.color;
+    const icBg = c.id==='adara'?'#f5eef8':c.id==='renato'?'#eaf1f9':c.id==='cesar'?'#faf0ed':'#fdeef4';
+
+    cardsHtml += `
+      <div class="cc" style="border-top:3px solid ${borderTop}">
+        <div class="cc-top">
+          <div class="ic" style="background:${icBg};color:${c.color}">${c.icon}</div>
+          <div class="cname">${c.name}</div>
+          <div class="carea">${c.area}</div>
+          <div class="sb ${statusCls}">${statusBadge}</div>
+          <div class="count-badge">${content.length} ${content.length===1?'peça':'peças'} criada${content.length===1?'':'s'}</div>
+        </div>
+        <div class="cc-bot">
+          <a class="btn-link btn-edit" href="?v=admin&c=${c.id}">✏️ Editar conteúdo</a>
+          <a class="btn-link btn-view" href="?v=client&c=${c.id}" target="_blank">👁 Ver painel</a>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('app').innerHTML = `
+    <header>
+      <div class="logo">Aprov<em>Aí</em></div>
+      <div class="badge">👤 Social Media</div>
+    </header>
+    <div class="hero">
+      <div class="h-label">Painel de Gestão</div>
+      <div class="h-title">Gerencie seus <em>clientes</em></div>
+      <div class="h-sub">Crie conteúdos, envie para aprovação e acompanhe as respostas.</div>
+    </div>
+    <div class="sec">Clientes</div>
+    <div class="grid">${cardsHtml}</div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ADMIN MODE - CONTENT MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════
+
+function renderAdmin(client) {
+  document.getElementById('pageTitle').textContent = `Editar — ${client.name}`;
+  
+  document.getElementById('dynamicStyles').textContent = `
+    :root{--bg:#f5f2ee;--ink:#1a1612;--s:#fff;--b:#e2ddd8;--m:#9a9087;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+    header{background:var(--ink);padding:0 44px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .back{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.6);text-decoration:none;transition:color .2s;}
+    .back:hover{color:#fff;}
+    .h-client{font-family:'Instrument Serif',serif;font-size:19px;color:#fff;}
+    .save-btn{padding:8px 20px;background:#a8d99c;border:none;border-radius:8px;font-size:13px;font-weight:600;color:#1a1612;cursor:pointer;transition:all .2s;}
+    .save-btn:hover{background:#8fc77d;transform:translateY(-1px);}
+    .hero{padding:36px 44px;background:linear-gradient(135deg,${client.color} 0%,${client.color}dd 100%);color:#fff;}
+    .hero-title{font-family:'Instrument Serif',serif;font-size:38px;margin-bottom:8px;}
+    .hero-sub{font-size:15px;opacity:.85;}
+    .content{padding:20px 44px 100px;}
+    .add-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--s);border:2px dashed var(--b);border-radius:12px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transition:all .2s;margin-bottom:20px;}
+    .add-btn:hover{border-color:${client.color};background:${client.color}11;}
+    .items{display:flex;flex-direction:column;gap:16px;}
+    .item{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:20px 24px;}
+    .item-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .type-select{padding:6px 12px;border-radius:8px;border:1px solid var(--b);font-size:13px;font-weight:600;background:var(--s);cursor:pointer;}
+    .del-btn{margin-left:auto;padding:6px 12px;background:#fef0ee;color:#c0392b;border:1px solid #f5d7d4;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s;}
+    .del-btn:hover{background:#c0392b;color:#fff;}
+    .field{margin-bottom:14px;}
+    .label{font-size:12px;font-weight:600;color:var(--m);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;}
+    input,textarea{width:100%;padding:10px 12px;border:1px solid var(--b);border-radius:8px;font-size:14px;font-family:'Figtree',sans-serif;background:var(--s);color:var(--ink);transition:border-color .2s;}
+    input:focus,textarea:focus{outline:none;border-color:${client.color};}
+    textarea{resize:vertical;min-height:100px;line-height:1.6;}
+    .tags-input{min-height:auto;}
+    .hint{font-size:11px;color:var(--m);margin-top:4px;}
+    .fixed-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(245,242,238,.97);backdrop-filter:blur(16px);border-top:1px solid var(--b);padding:14px 44px;display:flex;align-items:center;justify-content:space-between;z-index:200;}
+    .bar-info{font-size:14px;color:var(--m);}
+    .bar-info strong{color:var(--ink);}
+    .bar-actions{display:flex;gap:10px;}
+    .btn{padding:10px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none;font-family:'Figtree',sans-serif;}
+    .btn-save{background:${client.color};color:#fff;}
+    .btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 12px ${client.color}44;}
+    .btn-link{background:var(--s);color:var(--ink);border:1px solid var(--b);text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-link:hover{border-color:var(--ink);}
+    @media(max-width:600px){header,.hero,.content,.fixed-bar{padding-left:20px;padding-right:20px;}}
+  `;
+
+  const contentKey = 'content_' + client.id;
+  let content = getData(contentKey) || [];
+
+  function render() {
+    const itemsHtml = content.map((item, i) => `
+      <div class="item">
+        <div class="item-header">
+          <select class="type-select" data-idx="${i}" onchange="updateType(${i},this.value)">
+            <option value="post" ${item.type==='post'?'selected':''}>📝 Post</option>
+            <option value="carousel" ${item.type==='carousel'?'selected':''}>🎠 Carrossel</option>
+            <option value="reels" ${item.type==='reels'?'selected':''}>🎬 Reels</option>
+            <option value="stories" ${item.type==='stories'?'selected':''}>📖 Stories</option>
+          </select>
+          <span style="font-size:12px;color:var(--m);">#${i+1}</span>
+          <button class="del-btn" onclick="deleteItem(${i})">🗑 Excluir</button>
+        </div>
+        <div class="field">
+          <div class="label">Título</div>
+          <input type="text" value="${item.title||''}" data-idx="${i}" data-field="title" onchange="updateField(${i},'title',this.value)"/>
+        </div>
+        <div class="field">
+          <div class="label">Data de publicação</div>
+          <input type="text" value="${item.date||''}" placeholder="Ex: 18 mar" data-idx="${i}" data-field="date" onchange="updateField(${i},'date',this.value)"/>
+        </div>
+        <div class="field">
+          <div class="label">Copy / Roteiro</div>
+          <textarea data-idx="${i}" data-field="copy" onchange="updateField(${i},'copy',this.value)">${item.copy||''}</textarea>
+        </div>
+        ${item.type==='post'||item.type==='stories'?`
+        <div class="field">
+          <div class="label">Hashtags (separadas por vírgula)</div>
+          <input type="text" class="tags-input" value="${(item.tags||[]).join(', ')}" data-idx="${i}" data-field="tags" onchange="updateTags(${i},this.value)"/>
+          <div class="hint">Ex: #Cliente, #Marca, #Tema</div>
+        </div>`:''}
+        ${item.type==='carousel'?`
+        <div class="field">
+          <div class="label">Número de slides</div>
+          <input type="number" min="2" max="10" value="${item.slides||5}" data-idx="${i}" data-field="slides" onchange="updateField(${i},'slides',parseInt(this.value))"/>
+        </div>`:''}
+        ${renderUploadSection(i, item)}
+      </div>
+    `).join('');
+
+    document.getElementById('app').innerHTML = `
+      <header>
+        <a class="back" href="?v=dashboard">← Voltar</a>
+        <div class="h-client">${client.name}</div>
+        <button class="save-btn" onclick="saveContent()">💾 Salvar</button>
+      </header>
+      <div class="hero">
+        <div class="hero-title">Editar Conteúdo</div>
+        <div class="hero-sub">Crie e organize as peças que serão enviadas para aprovação.</div>
+      </div>
+      <div class="content">
+        <button class="add-btn" onclick="addItem()">+ Adicionar nova peça</button>
+        <div class="items" id="items">${itemsHtml}</div>
+      </div>
+      <div class="fixed-bar">
+        <div class="bar-info"><strong>${content.length}</strong> ${content.length===1?'peça criada':'peças criadas'}</div>
+        <div class="bar-actions">
+          <button class="btn btn-save" onclick="saveContent()">💾 Salvar alterações</button>
+          <a class="btn btn-link" href="?v=client&c=${client.id}" target="_blank">👁 Ver painel do cliente</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderUploadSection(idx, item) {
+    const i = idx + 1;
+    const approvalKey = 'aprovai_' + client.id;
+    const approval = getData(approvalKey) || {};
+    const uploads = approval.uploads || {};
+
+    if (item.type === 'post' || item.type === 'reels' || item.type === 'stories') {
+      const hasUpload = uploads[i];
+      return `
+        <div class="field">
+          <div class="label">${item.type==='reels'?'Vídeo':'Imagem/Vídeo'}</div>
+          ${hasUpload ? `
+            <div style="position:relative;border:1px solid var(--b);border-radius:8px;padding:8px;background:#f8f5f0;">
+              ${hasUpload.type.startsWith('video')?
+                `<video src="${hasUpload.dataUrl}" controls style="max-width:200px;max-height:200px;border-radius:6px;"></video>`:
+                `<img src="${hasUpload.dataUrl}" style="max-width:200px;max-height:200px;object-fit:cover;border-radius:6px;" alt="Preview"/>`
+              }
+              <button class="del-btn" style="margin-left:10px;margin-top:8px;" onclick="removeAdminUpload(${i})">🗑 Remover arquivo</button>
+            </div>
+          ` : `
+            <input type="file" id="adminUpload${i}" accept="${item.type==='reels'?'video/*':'image/*,video/*'}" onchange="handleAdminUpload(${i},this)"/>
+            <div class="hint">Máximo 10MB</div>
+          `}
+        </div>`;
+    } else if (item.type === 'carousel') {
+      const slides = item.slides || 5;
+      let slidesHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:8px;">';
+      for (let j = 1; j <= slides; j++) {
+        const slideKey = `${i}_${j}`;
+        const hasSlide = uploads[slideKey];
+        slidesHtml += `
+          <div style="border:1px solid var(--b);border-radius:8px;padding:8px;background:#f8f5f0;">
+            <div style="font-size:11px;font-weight:600;margin-bottom:6px;color:var(--m);">Slide ${j}</div>
+            ${hasSlide ? `
+              <img src="${hasSlide.dataUrl}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;margin-bottom:6px;" alt="Slide ${j}"/>
+              <button class="del-btn" style="width:100%;font-size:11px;padding:4px;" onclick="removeAdminUpload('${slideKey}')">🗑 Remover</button>
+            ` : `
+              <input type="file" accept="image/*,video/*" onchange="handleAdminUpload('${slideKey}',this)" style="width:100%;font-size:11px;"/>
+            `}
+          </div>`;
+      }
+      slidesHtml += '</div>';
+      return `<div class="field"><div class="label">Slides do Carrossel</div>${slidesHtml}</div>`;
+    }
+    return '';
+  }
+
+  window.handleAdminUpload = (id, input) => {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { alert('Arquivo muito grande! Máximo 10MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const approvalKey = 'aprovai_' + client.id;
+      const approval = getData(approvalKey) || {uploads:{}};
+      if (!approval.uploads) approval.uploads = {};
+      approval.uploads[id] = {dataUrl: e.target.result, filename: file.name, type: file.type, size: file.size};
+      saveData(approvalKey, approval);
+      render();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.removeAdminUpload = (id) => {
+    if (confirm('Remover este arquivo?')) {
+      const approvalKey = 'aprovai_' + client.id;
+      const approval = getData(approvalKey) || {uploads:{}};
+      if (approval.uploads) delete approval.uploads[id];
+      saveData(approvalKey, approval);
+      render();
+    }
+  };
+
+  window.addItem = () => {
+    content.push({type:'post',title:'',date:'',copy:'',tags:[]});
+    render();
+  };
+
+  window.deleteItem = (idx) => {
+    if (confirm('Excluir esta peça?')) {
+      content.splice(idx, 1);
+      render();
+    }
+  };
+
+  window.updateType = (idx, type) => {
+    content[idx].type = type;
+    if (type === 'carousel' && !content[idx].slides) content[idx].slides = 5;
+    render();
+  };
+
+  window.updateField = (idx, field, value) => {
+    content[idx][field] = value;
+  };
+
+  window.updateTags = (idx, value) => {
+    content[idx].tags = value.split(',').map(t=>t.trim()).filter(Boolean);
+  };
+
+  window.saveContent = () => {
+    saveData(contentKey, content);
+    alert('✓ Conteúdo salvo com sucesso!');
+  };
+
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CLIENT VIEW - APPROVAL INTERFACE
+// ═══════════════════════════════════════════════════════════════════
+
+function renderClient(client) {
+  const contentKey = 'content_' + client.id;
+  const content = getData(contentKey) || [];
+  
+  if (content.length === 0) {
+    document.getElementById('app').innerHTML = `
+      <div style="padding:60px 40px;text-align:center;font-family:'Figtree',sans-serif;max-width:500px;margin:0 auto;">
+        <div style="font-size:48px;margin-bottom:20px;">📭</div>
+        <h2 style="font-family:'Instrument Serif',serif;font-size:28px;margin-bottom:12px;">Nenhum conteúdo disponível</h2>
+        <p style="color:#666;line-height:1.6;">O administrador ainda não criou conteúdos para aprovação.</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('pageTitle').textContent = `Aprovação — ${client.name}`;
+  
+  const themeStyles = {
+    'light-wellness':`:root{--bg:#fdf8f4;--ink:#2a1f18;--s:#fff;--b:#ecddd4;--m:#a08070;--br:#7c4d8a;--bl:#f5eef8;--bm:#d4b0e0;--ok:#4a7c59;--okl:#edf5ef;--no:#b0392a;--nol:#fdf0ee;--w:#b07020;--wl:#fdf5e8;}body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);}.hero{background:linear-gradient(135deg,var(--br) 0%,#9b6aaa 100%);color:#fff;}.hero::before{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06);}.h-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:500;}.cname-hd{font-family:'Cormorant Garamond',serif;}.ptitle{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;}.thumb{background:#f5f0eb;}.tag{color:var(--br);background:var(--bl);}`,
+    'clinical-blue':`:root{--bg:#f0f4f9;--ink:#0d1f33;--s:#fff;--b:#d4dde8;--m:#6e8099;--br:#1a4a7a;--bl:#eaf1f9;--bm:#a0bdd8;--ok:#1a6a40;--okl:#eaf5ef;--no:#b02030;--nol:#faeaec;--w:#905010;--wl:#fdf3e8;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);}body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(26,74,122,.03)1px,transparent 1px),linear-gradient(90deg,rgba(26,74,122,.03)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}header{background:var(--ink);}.back,.cname-hd{color:#fff;}.hero{background:var(--br);color:#fff;}.hero::before{content:'';position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.07);width:400px;height:400px;right:-120px;top:-200px;}.h-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:500;}.h-title em{color:#9ecbee;}.cname-hd{font-family:'Playfair Display',serif;}.ptitle{font-family:'Playfair Display',serif;font-size:18px;font-weight:500;}.tag{color:var(--br);background:var(--bl);}.ava{background:var(--br);border-color:rgba(255,255,255,.15);color:#fff;font-family:'Playfair Display',serif;}`,
+    'dark-premium':`:root{--bg:#13100e;--ink:#ede8e2;--s:#1f1b18;--b:#2e2820;--m:#7a6e64;--br:#c07838;--bl:rgba(192,120,56,.12);--bm:rgba(192,120,56,.3);--ok:#4a9060;--okl:rgba(74,144,96,.12);--no:#c04040;--nol:rgba(192,64,64,.12);--w:#c09030;--wl:rgba(192,144,48,.12);}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);}body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}header{background:rgba(19,16,14,.95);backdrop-filter:blur(16px);}.hero{background:linear-gradient(180deg,#1a1612 0%,transparent 100%);}.h-ey{color:var(--br);display:flex;align-items:center;gap:10px;}.ey-line{width:32px;height:1px;background:var(--br);opacity:.5;}.h-title{font-family:'Libre Baskerville',serif;font-size:44px;}.h-title em{color:var(--br);}.cname-hd{font-family:'Libre Baskerville',serif;}.ptitle{font-family:'Libre Baskerville',serif;font-size:18px;}.ava{background:var(--bl);border-color:var(--bm);color:var(--br);font-family:'Libre Baskerville',serif;}.tag{color:var(--br);background:var(--bl);border:1px solid var(--bm);}`,
+    'rose-elegant':`:root{--bg:#fef9fb;--ink:#3d1a2b;--s:#fff;--b:#f5d7e4;--m:#a0708a;--br:#d4698d;--bl:#fdeef4;--bm:#f5c4d8;--ok:#4a7c59;--okl:#edf5ef;--no:#b0392a;--nol:#fdf0ee;--w:#b07020;--wl:#fdf5e8;}body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);}.hero{background:linear-gradient(135deg,#d4698d 0%,#e88aaa 100%);color:#fff;}.hero::before{content:'';position:absolute;right:-80px;top:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.08);}.hero::after{content:'';position:absolute;left:-60px;bottom:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.05);}.h-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:500;}.cname-hd{font-family:'Cormorant Garamond',serif;}.ptitle{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;}.thumb{background:#fef3f7;}.tag{color:var(--br);background:var(--bl);}.ava{background:var(--bl);border-color:var(--bm);color:var(--br);}`
+  };
+
+  document.getElementById('dynamicStyles').textContent = themeStyles[client.theme] + `
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{min-height:100vh;}
+    header{padding:0 44px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--b);}
+    .back{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--m);text-decoration:none;transition:color .2s;}
+    .back:hover{color:var(--ink);}
+    .id{display:flex;align-items:center;gap:12px;}
+    .ava{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+    .cname-hd{font-size:19px;}
+    .lbadge{font-size:12px;color:var(--m);background:#f5f0eb;padding:4px 10px;border-radius:999px;border:1px solid var(--b);}
+    .hero{padding:36px 44px;position:relative;overflow:hidden;z-index:1;}
+    .h-ey{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:10px;}
+    .h-title{line-height:1.1;margin-bottom:8px;}
+    .h-sub{font-size:15px;opacity:.75;max-width:440px;line-height:1.6;margin-bottom:24px;}
+    .prog-wrap{display:flex;align-items:center;gap:14px;}
+    .prog-track{flex:1;max-width:260px;height:6px;background:rgba(255,255,255,.25);border-radius:999px;overflow:hidden;}
+    .prog-fill{height:100%;background:#fff;border-radius:999px;transition:width .5s ease;}
+    .prog-text{font-size:13px;opacity:.85;}
+    .flt{padding:18px 44px 0;display:flex;gap:8px;}
+    .tab{padding:7px 16px;border-radius:999px;border:1px solid var(--b);background:transparent;color:var(--m);font-size:13px;cursor:pointer;transition:all .18s;}
+    .tab:hover{border-color:var(--br);color:var(--br);}
+    .tab.active{background:var(--br);border-color:var(--br);color:#fff;}
+    .tab-n{font-size:11px;background:rgba(0,0,0,.08);padding:1px 6px;border-radius:999px;font-weight:600;}
+    .tab.active .tab-n{background:rgba(255,255,255,.2);}
+    .cards{padding:18px 44px 100px;display:flex;flex-direction:column;gap:14px;}
+    .card{background:var(--s);border:1.5px solid var(--b);border-radius:18px;overflow:hidden;transition:box-shadow .2s;}
+    .card.approved{border-color:var(--ok);}.card.rejected{border-color:var(--no);}.card.with-edit{border-color:var(--w);}
+    .cbar{height:3px;background:var(--b);transition:background .3s;}
+    .card.approved .cbar{background:var(--ok);}.card.rejected .cbar{background:var(--no);}.card.with-edit .cbar{background:var(--w);}
+    .cbody{padding:20px 24px;}
+    .cmeta{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .tpill{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:6px;}
+    .tp-post{background:#f0ebff;color:#6940c0;}.tp-car{background:#e8f4ff;color:#1a5fa0;}.tp-reel{background:#ffebf0;color:#c0204a;}.tp-story{background:#fff8e8;color:#a07820;}
+    .cnum{font-size:12px;color:var(--m);background:#f5f0eb;padding:3px 8px;border-radius:6px;}
+    .cdate{font-size:12px;color:var(--m);margin-left:auto;}
+    .preview{display:grid;grid-template-columns:148px 1fr;gap:16px;margin-bottom:16px;}
+    .thumb{border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--m);font-size:11px;aspect-ratio:1;border:1px solid var(--b);position:relative;overflow:hidden;}
+    .thumb.vert{aspect-ratio:9/16;max-height:148px;}
+    .thumb svg{opacity:.35;}
+    .slides{display:flex;gap:6px;height:120px;margin-bottom:16px;}
+    .slide{flex:1;background:#f5f0eb;border-radius:10px;border:1px solid var(--b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--m);font-size:10px;position:relative;}
+    .sn{font-size:16px;font-weight:600;color:#ccc;}
+    .tbody{display:flex;flex-direction:column;gap:10px;}
+    .ptitle{line-height:1.3;}
+    .pcopy{font-size:14px;line-height:1.75;white-space:pre-line;}
+    .pcopy.col{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .sm-btn{background:none;border:none;color:var(--br);font-size:13px;cursor:pointer;text-decoration:underline;}
+    .tags{display:flex;flex-wrap:wrap;gap:5px;}
+    .tag{font-size:12px;padding:3px 8px;border-radius:4px;}
+    .cbox{margin-bottom:16px;background:#fdf5e8;border:1px solid #e8d5a0;border-radius:12px;padding:13px 15px;display:none;animation:fd .2s ease;}
+    @keyframes fd{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    .cbox.show{display:block;}
+    .cbox.rej{background:var(--nol);border-color:#e8c0b0;}
+    .clbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--m);margin-bottom:8px;}
+    textarea{width:100%;background:transparent;border:none;outline:none;font-size:14px;color:var(--ink);resize:none;min-height:56px;line-height:1.6;}
+    textarea::placeholder{color:var(--m);}
+    .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .btn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .18s;}
+    .bok{background:var(--okl);border-color:rgba(74,124,89,.3);color:var(--ok);}
+    .bok:hover,.bok.on{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:600;}
+    .bed{background:var(--wl);border-color:rgba(176,112,32,.3);color:var(--w);}
+    .bed:hover,.bed.on{background:var(--w);color:#fff;border-color:var(--w);font-weight:600;}
+    .bno{background:var(--nol);border-color:rgba(176,57,42,.25);color:var(--no);}
+    .bno:hover,.bno.on{background:var(--no);color:#fff;border-color:var(--no);font-weight:600;}
+    .bundo{margin-left:auto;background:transparent;border-color:var(--b);color:var(--m);font-size:13px;padding:7px 13px;}
+    .bundo:hover{border-color:var(--ink);color:var(--ink);}
+    .chip{display:none;align-items:center;gap:5px;padding:7px 13px;border-radius:10px;font-size:13px;font-weight:600;}
+    .chip.show{display:flex;}
+    .chip.ok{background:var(--okl);color:var(--ok);}.chip.no{background:var(--nol);color:var(--no);}.chip.ed{background:var(--wl);color:var(--w);}
+    .bbar{position:fixed;bottom:0;left:0;right:0;background:rgba(253,248,244,.96);backdrop-filter:blur(16px);border-top:1px solid var(--b);padding:14px 44px;display:flex;align-items:center;justify-content:space-between;transform:translateY(100%);transition:transform .4s;z-index:200;}
+    .bbar.show{transform:translateY(0);}
+    .bi{font-size:14px;color:var(--m);}.bi strong{color:var(--ink);}
+    .sbtn{padding:12px 30px;background:var(--br);border:none;border-radius:12px;font-weight:600;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;}
+    .sbtn:hover{transform:translateY(-1px);}
+    .ov{position:fixed;inset:0;background:rgba(42,31,24,.6);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .ov.show{opacity:1;pointer-events:all;}
+    .modal{background:#fff;border-radius:24px;padding:46px 38px;max-width:400px;width:90%;text-align:center;transform:scale(.94);transition:transform .3s;}
+    .ov.show .modal{transform:scale(1);}
+    .me{font-size:48px;margin-bottom:18px;}
+    .mt{font-size:28px;font-weight:600;margin-bottom:8px;}
+    .ms{font-size:15px;color:var(--m);line-height:1.6;}
+    .mpills{display:flex;justify-content:center;gap:10px;margin:18px 0;flex-wrap:wrap;}
+    .mp{padding:8px 16px;border-radius:10px;font-size:14px;font-weight:600;}
+    .mp-ok{background:var(--okl);color:var(--ok);}.mp-ed{background:var(--wl);color:var(--w);}.mp-no{background:var(--nol);color:var(--no);}
+    @media(max-width:600px){header,.hero,.flt,.cards,.bbar{padding-left:20px;padding-right:20px;}.preview{grid-template-columns:1fr;}}
+  `;
+
+  const KEY = 'aprovai_' + client.id;
+  const TOTAL = content.length;
+  const state = {statuses:{}, comments:{}, uploads:{}};
+  const cfg = {
+    approved: {cls:'approved',chip:'ok',label:'✓ Aprovado'},
+    edited:   {cls:'with-edit',chip:'ed',label:'✏ Edição solicitada'},
+    rejected: {cls:'rejected',chip:'no',label:'✕ Reprovado'}
+  };
+
+  try {
+    const d = getData(KEY);
+    if (d) {
+      if (d.statuses) Object.entries(d.statuses).forEach(([k,v])=>{state.statuses[+k]=v;});
+      if (d.comments) Object.entries(d.comments).forEach(([k,v])=>{state.comments[+k]=v;});
+      if (d.uploads) state.uploads = d.uploads;
+    }
+  } catch(e){}
+
+  const cardsHtml = content.map((item, idx) => {
+    const i = idx + 1;
+    const typeMap = {post:'Post',carousel:'Carrossel',reels:'Roteiro Reels',stories:'Stories'};
+    const typeCls = {post:'tp-post',carousel:'tp-car',reels:'tp-reel',stories:'tp-story'};
+
+    const uploadedFile = state.uploads && state.uploads[i];
+    const hasUpload = uploadedFile && uploadedFile.dataUrl;
+
+    let visualHtml = '';
+    if (item.type === 'post') {
+      const thumbContent = hasUpload 
+        ? `<img src="${uploadedFile.dataUrl}" style="width:100%;height:100%;object-fit:cover;" alt="Imagem"/>`
+        : `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Imagem</span>`;
+      visualHtml = `<div class="preview">
+        <div class="thumb" style="cursor:default;">${thumbContent}</div>
+        <div class="tbody">
+          <div class="ptitle">${item.title}</div>
+          <div class="pcopy col" id="t${i}">${item.copy}</div>
+          <button class="sm-btn" onclick="toggle('t${i}',this)">Ver mais</button>
+          ${item.tags?'<div class="tags">'+item.tags.map(t=>`<span class="tag">${t}</span>`).join('')+'</div>':''}
+        </div>
+      </div>`;
+    } else if (item.type === 'carousel') {
+      const slidesHtml = Array(item.slides||5).fill(0).map((_,j)=>{
+        const slideIdx = `${i}_${j+1}`;
+        const slideUpload = state.uploads && state.uploads[slideIdx];
+        if (slideUpload && slideUpload.dataUrl) {
+          return `<div class="slide" style="padding:0;position:relative;cursor:default;"><img src="${slideUpload.dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" alt="Slide"/><div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;background:rgba(0,0,0,.5);color:#fff;font-size:9px;padding:2px;">Slide ${j+1}</div></div>`;
+        } else {
+          return `<div class="slide" style="cursor:default;"><div class="sn">${j+1}</div>${j===0?'Capa':j===(item.slides||5)-1?'CTA':'Slide'}</div>`;
+        }
+      }).join('');
+      visualHtml = `<div class="slides">${slidesHtml}</div>
+        <div class="tbody">
+          <div class="ptitle">${item.title}</div>
+          <div class="pcopy col" id="t${i}">${item.copy}</div>
+          <button class="sm-btn" onclick="toggle('t${i}',this)">Ver mais</button>
+        </div>`;
+    } else if (item.type === 'reels') {
+      const thumbContent = hasUpload
+        ? `<video src="${uploadedFile.dataUrl}" style="width:100%;height:100%;object-fit:cover;" controls></video>`
+        : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21"/></svg><span>Vídeo</span>`;
+      visualHtml = `<div class="preview">
+        <div class="thumb vert" style="cursor:default;">${thumbContent}</div>
+        <div class="tbody">
+          <div class="ptitle">${item.title}</div>
+          <div class="pcopy col" id="t${i}">${item.copy}</div>
+          <button class="sm-btn" onclick="toggle('t${i}',this)">Ver mais</button>
+        </div>
+      </div>`;
+    } else if (item.type === 'stories') {
+      const thumbContent = hasUpload
+        ? `<img src="${uploadedFile.dataUrl}" style="width:100%;height:100%;object-fit:cover;" alt="Story"/>`
+        : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/></svg><span>Story</span>`;
+      visualHtml = `<div class="preview">
+        <div class="thumb vert" style="cursor:default;">${thumbContent}</div>
+        <div class="tbody">
+          <div class="ptitle">${item.title}</div>
+          <div class="pcopy col" id="t${i}">${item.copy}</div>
+          <button class="sm-btn" onclick="toggle('t${i}',this)">Ver mais</button>
+        </div>
+      </div>`;
+    }
+
+    const st = state.statuses[i] || 'pending';
+    const cardCls = st==='approved'?'approved':st==='edited'?'with-edit':st==='rejected'?'rejected':'';
+    const chipCls = st==='approved'?'ok':st==='edited'?'ed':st==='rejected'?'no':'';
+    const chipLabel = cfg[st] ? cfg[st].label : '';
+    const showChip = st!=='pending' ? 'show' : '';
+    const showBox = (st==='edited' || st==='rejected') ? 'show' : '';
+    const rejMode = st==='rejected' ? 'rej' : '';
+    const cmtVal = state.comments[i] || '';
+
+    return `
+      <div class="card ${cardCls}" id="c${i}" data-status="${st}">
+        <div class="cbar"></div>
+        <div class="cbody">
+          <div class="cmeta">
+            <span class="tpill ${typeCls[item.type]}">${typeMap[item.type]}</span>
+            <span class="cnum">#${i}</span>
+            <span class="cdate">📅 ${item.date||'—'}</span>
+          </div>
+          ${visualHtml}
+          <div class="cbox ${showBox} ${rejMode}" id="cb${i}">
+            <div class="clbl">Seu comentário</div>
+            <textarea id="cm${i}" placeholder="O que precisa ser ajustado?">${cmtVal}</textarea>
+          </div>
+          <div class="acts">
+            <button class="btn bok" onclick="setS(${i},'approved')">✓ Aprovar</button>
+            <button class="btn bed" onclick="setS(${i},'edited')">✏ Editar</button>
+            <button class="btn bno" onclick="setS(${i},'rejected')">✕ Reprovar</button>
+            <div class="chip ${showChip} ${chipCls}" id="ch${i}">${chipLabel}</div>
+            <button class="btn bundo" onclick="undo(${i})">Desfazer</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('app').innerHTML = `
+    <header>
+      <a class="back" href="?v=dashboard">← Voltar</a>
+      <div class="id">
+        <div class="ava">${client.icon}</div>
+        <div class="cname-hd">${client.name}</div>
+      </div>
+      <div class="lbadge">Lote Março 2025</div>
+    </header>
+    <div class="hero">
+      <div class="h-ey">${client.theme==='dark-premium'?'<span class="ey-line"></span>':''}Aprovação de Conteúdo</div>
+      <div class="h-title">Olá, ${client.name.split(' ')[client.id==='adara'||client.id==='emily'?1:0]}! 👋</div>
+      <div class="h-sub">Revise as peças preparadas para você e nos diga o que acha.</div>
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="pFill"></div></div>
+        <div class="prog-text" id="pText">0 de ${TOTAL} revisados</div>
+      </div>
+    </div>
+    <div class="flt">
+      <button class="tab active" onclick="filter('all',this)">Todos <span class="tab-n" id="na">${TOTAL}</span></button>
+      <button class="tab" onclick="filter('pending',this)">Pendentes <span class="tab-n" id="np">${TOTAL}</span></button>
+      <button class="tab" onclick="filter('approved',this)">Aprovados <span class="tab-n" id="nok">0</span></button>
+      <button class="tab" onclick="filter('issues',this)">Com feedback <span class="tab-n" id="ni">0</span></button>
+    </div>
+    <div class="cards">${cardsHtml}</div>
+    <div class="bbar" id="bbar">
+      <div class="bi"><strong id="bc">0 de ${TOTAL}</strong> revisados</div>
+      <button class="sbtn" onclick="submitAll()">Enviar respostas →</button>
+    </div>
+    <div class="ov" id="ov">
+      <div class="modal">
+        <div class="me">🎉</div>
+        <div class="mt">Respostas enviadas!</div>
+        <div class="ms">Obrigado pela rapidez! Nossa equipe já recebeu seu feedback.</div>
+        <div class="mpills" id="mp"></div>
+        <div class="ms" style="font-size:13px">Um resumo foi enviado ao seu e-mail.</div>
+      </div>
+    </div>
+  `;
+
+  function apply(id, status, doSave) {
+    state.statuses[id] = status;
+    const card = document.getElementById('c'+id);
+    const chip = document.getElementById('ch'+id);
+    const cb   = document.getElementById('cb'+id);
+    card.className = 'card ' + cfg[status].cls;
+    card.setAttribute('data-status', status);
+    chip.className = 'chip show ' + cfg[status].chip;
+    chip.textContent = cfg[status].label;
+    cb.classList.toggle('show', status !== 'approved');
+    cb.classList.toggle('rej', status === 'rejected');
+    if (doSave) saveData(KEY, {statuses:state.statuses, comments:state.comments, uploads:state.uploads, submitted:false, savedAt:Date.now()});
+  }
+
+  window.setS = (id, st) => { apply(id, st, true); sync(); };
+
+  window.undo = (id) => {
+    delete state.statuses[id]; delete state.comments[id];
+    const c = document.getElementById('c'+id);
+    c.className = 'card'; c.setAttribute('data-status', 'pending');
+    document.getElementById('ch'+id).className = 'chip';
+    document.getElementById('cb'+id).classList.remove('show','rej');
+    document.getElementById('cm'+id).value = '';
+    saveData(KEY, {statuses:state.statuses, comments:state.comments, uploads:state.uploads, submitted:false, savedAt:Date.now()});
+    sync();
+  };
+
+  for (let i=1; i<=TOTAL; i++) {
+    const cmEl = document.getElementById('cm'+i);
+    if (cmEl) {
+      cmEl.addEventListener('input', function() {
+        const id = +this.id.replace('cm','');
+        if (this.value.trim()) state.comments[id] = this.value.trim();
+        else delete state.comments[id];
+        saveData(KEY, {statuses:state.statuses, comments:state.comments, uploads:state.uploads, submitted:false, savedAt:Date.now()});
+      });
+    }
+  }
+
+  function sync() {
+    const done = Object.keys(state.statuses).length;
+    const ok = Object.values(state.statuses).filter(s=>s==='approved').length;
+    const ed = Object.values(state.statuses).filter(s=>s==='edited').length;
+    const no = Object.values(state.statuses).filter(s=>s==='rejected').length;
+    document.getElementById('pFill').style.width = (done/TOTAL*100)+'%';
+    document.getElementById('pText').textContent = done+' de '+TOTAL+' revisados';
+    document.getElementById('bc').textContent = done+' de '+TOTAL;
+    document.getElementById('na').textContent = TOTAL;
+    document.getElementById('np').textContent = TOTAL-done;
+    document.getElementById('nok').textContent = ok;
+    document.getElementById('ni').textContent = ed+no;
+    document.getElementById('bbar').classList.toggle('show', done > 0);
+  }
+
+  window.filter = (f, tab) => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.card').forEach(c=>{
+      const s = c.getAttribute('data-status');
+      c.style.display = (f==='all' || (f==='pending'&&s==='pending') || (f==='approved'&&s==='approved') || (f==='issues'&&(s==='edited'||s==='rejected'))) ? '' : 'none';
+    });
+  };
+
+  window.toggle = (id, btn) => {
+    const col = document.getElementById(id).classList.toggle('col');
+    btn.textContent = col ? 'Ver mais' : 'Ver menos';
+  };
+
+  window.submitAll = () => {
+    const ok = Object.values(state.statuses).filter(s=>s==='approved').length;
+    const ed = Object.values(state.statuses).filter(s=>s==='edited').length;
+    const no = Object.values(state.statuses).filter(s=>s==='rejected').length;
+    const totalUploads = Object.keys(state.uploads || {}).length;
+    
+    saveData(KEY, {statuses:state.statuses, comments:state.comments, uploads:state.uploads, submitted:true, submittedAt:Date.now()});
+    
+    let h = '';
+    if (ok) h += `<span class="mp mp-ok">✓ ${ok} aprovados</span>`;
+    if (ed) h += `<span class="mp mp-ed">✏ ${ed} com edição</span>`;
+    if (no) h += `<span class="mp mp-no">✕ ${no} reprovados</span>`;
+    document.getElementById('mp').innerHTML = h;
+    document.getElementById('ov').classList.add('show');
+    
+    // WhatsApp notification
+    const YOUR_WHATSAPP = '5511999999999'; // ← COLOQUE SEU NÚMERO AQUI
+    const now = new Date().toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+    let message = `🎯 *Nova Aprovação Recebida*\n\n`;
+    message += `👤 Cliente: *${client.name}*\n`;
+    message += `📅 ${now}\n\n`;
+    message += `📊 *Resumo:*\n`;
+    if (ok) message += `✅ ${ok} aprovados\n`;
+    if (ed) message += `✏️ ${ed} com pedido de edição\n`;
+    if (no) message += `❌ ${no} reprovados\n`;
+    if (totalUploads) message += `📎 ${totalUploads} arquivos enviados\n`;
+    message += `\n🔗 Ver detalhes no painel`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${YOUR_WHATSAPP}?text=${encodedMessage}`, '_blank');
+  };
+
+  document.getElementById('ov').addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+  });
+
+  sync();
+}
+</script>
+</body>
+</html>
