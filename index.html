@@ -491,6 +491,9 @@ body.client-mode .client-portal-header{display:block;}
 [data-theme="dark"] .client-ic.ic-cesar { background:#2e1a15 !important; color:#d4826a !important; }
 
 </style>
+  <!-- Firebase SDK (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -1700,6 +1703,90 @@ window.addEventListener('storage', function(e) {
     toast('🔔 Nova aprovação do cliente!');
   } catch(err) {}
 });
+
+
+// ════════════════════════════════════════════
+// FIREBASE SYNC — progressive enhancement
+// (se falhar, o app continua funcionando normalmente)
+// ════════════════════════════════════════════
+(function initFirebase() {
+  const FIREBASE_CONFIG = {
+    apiKey:            "AIzaSyDwEXgYi_e--O9oqmUifLVxIaqrq3ZMUOc",
+    authDomain:        "aprovai-34e6d.firebaseapp.com",
+    databaseURL:       "https://aprovai-34e6d-default-rtdb.firebaseio.com",
+    projectId:         "aprovai-34e6d",
+    storageBucket:     "aprovai-34e6d.firebasestorage.app",
+    messagingSenderId: "1021333850436",
+    appId:             "1:1021333850436:web:ad20a4f241705d06e2ef11"
+  };
+
+  let DOC_REF = null;
+  let _saving  = false;
+
+  try {
+    const fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+    const db    = firebase.firestore(fbApp);
+    DOC_REF     = db.collection('aprovai').doc('painel');
+  } catch(e) {
+    console.warn('[Firebase] init error — usando só localStorage', e);
+    return; // app continua normalmente sem Firebase
+  }
+
+  // Sobrescreve save() para gravar no Firestore também
+  const _origSave = save;
+  window.save = function() {
+    _origSave();
+    if (!DOC_REF) return;
+    _saving = true;
+    const data = {
+      statuses:   state.statuses,
+      deletedIds: state.deletedIds || [],
+      approvals:  approvals,
+      extraPosts: extraPosts,
+      nextId:     nextId
+    };
+    DOC_REF.set(data)
+      .then(() => { _saving = false; })
+      .catch(e  => { _saving = false; console.warn('[Firebase] save error', e); });
+  };
+
+  // Escuta mudanças em tempo real (outra máquina aprovou)
+  DOC_REF.onSnapshot(doc => {
+    if (_saving) return; // mudança foi nossa, ignora
+    if (!doc.exists) return;
+    const d = doc.data();
+
+    // Só aplica se tiver dados reais
+    if (!d || (!d.statuses && !d.approvals)) return;
+
+    const prevApprovals = JSON.stringify(approvals);
+    state.statuses   = d.statuses   || {};
+    state.deletedIds = d.deletedIds || [];
+    approvals        = d.approvals  || {};
+    extraPosts       = d.extraPosts || [];
+    nextId           = d.nextId     || 100;
+
+    // Garante que todos os TASKS têm status
+    allPosts().forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'; });
+
+    // Salva no cache local
+    try { localStorage.setItem('aprovai-v1', JSON.stringify(d)); } catch(e) {}
+
+    // Atualiza UI
+    updateStats();
+    buildCalendar();
+    if (state.calView === 'list') buildList();
+    const aprovEl = document.getElementById('sec-aprovador');
+    if (aprovEl && aprovEl.classList.contains('active')) renderAprovador();
+
+    // Notifica se aprovações mudaram
+    if (JSON.stringify(approvals) !== prevApprovals) {
+      toast('🔔 Nova resposta do cliente!');
+    }
+  }, e => console.warn('[Firebase] listener error', e));
+
+  console.log('[Firebase] ✅ Sincronização ativa');
+})();
 
 </script>
 </body>
