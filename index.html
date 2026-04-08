@@ -490,6 +490,41 @@ body.client-mode .client-portal-header{display:block;}
 /* Dr. César — client card icon dark mode */
 [data-theme="dark"] .client-ic.ic-cesar { background:#2e1a15 !important; color:#d4826a !important; }
 
+
+/* Adjustment highlight in admin aprovador card */
+.aprov-adjust-highlight {
+  margin: .625rem 0 0;
+  padding: .625rem .875rem;
+  background: var(--gold-hl);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  font-size: .8125rem;
+  color: var(--gold-txt);
+}
+.aprov-adjust-highlight strong {
+  display: block;
+  font-size: .6875rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .25rem;
+  opacity: .8;
+}
+
+
+/* Status: Aprovado (novo) */
+.status-btn.approved,.s-approved { background:var(--success-hl); color:var(--success-txt); border-color:var(--success); }
+.status-opt.opt-approved .opt-dot { background:var(--success); }
+.status-opt.opt-approved.sel { background:var(--success-hl); border-color:var(--success); color:var(--success-txt); }
+
+
+/* Filter row wraps but type chips stay inline with others */
+.filter-row { flex-wrap: wrap; row-gap: .375rem; }
+
+
+/* Client portal filter chips */
+.cp-filter-bar .chip { font-size: .8125rem; }
+.cp-filter-bar .chip.active { background: var(--text); color: var(--inverse); border-color: var(--text); }
+
 </style>
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -547,10 +582,10 @@ body.client-mode .client-portal-header{display:block;}
   <div class="container">
     <section class="stats-section">
       <div class="stats-grid">
-        <div class="stat-card s-pending"><span class="stat-num" id="cnt-p">0</span><span class="stat-label">Falta Iniciar</span></div>
-        <div class="stat-card s-review"><span class="stat-num" id="cnt-r">0</span><span class="stat-label">Em Produção</span></div>
-        <div class="stat-card s-done"><span class="stat-num" id="cnt-d">0</span><span class="stat-label">Prontos</span></div>
-        <div class="stat-card s-rejected"><span class="stat-num" id="cnt-aprov">0</span><span class="stat-label">Aguardando Aprovação</span></div>
+        <div class="stat-card s-pending"><span class="stat-num" id="cnt-p">0</span><span class="stat-label">Falta iniciar</span></div>
+        <div class="stat-card s-review"><span class="stat-num" id="cnt-r">0</span><span class="stat-label">Aguardando aprovação</span></div>
+        <div class="stat-card s-done"><span class="stat-num" id="cnt-approved">0</span><span class="stat-label">Aprovado</span></div>
+        <div class="stat-card s-rejected"><span class="stat-num" id="cnt-done">0</span><span class="stat-label">Programado</span></div>
       </div>
       <div class="progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
@@ -576,12 +611,13 @@ body.client-mode .client-portal-header{display:block;}
         <div class="filter-sep"></div>
         <button class="chip active" data-sfilter="all">Todos status</button>
         <button class="chip" data-sfilter="pending">Falta iniciar</button>
-        <button class="chip" data-sfilter="review">Em produção</button>
-        <button class="chip" data-sfilter="done">Prontos</button>
+        <button class="chip" data-sfilter="review">Aguardando aprovação</button>
+        <button class="chip" data-sfilter="approved">Aprovado</button>
+        <button class="chip" data-sfilter="done">Programado</button>
         <div class="filter-sep"></div>
         <button class="chip active" data-tfilter="all">✦ Todos tipos</button>
-        <button class="chip" data-tfilter="static">🖼 Agatha (estático + carrossel)</button>
-        <button class="chip" data-tfilter="motion">🎬 Alexia (reels + vídeo + stories)</button>
+        <button class="chip" data-tfilter="static">🖼 Agatha</button>
+        <button class="chip" data-tfilter="motion">🎬 Alexia</button>
       </div>
     </section>
     <!-- Calendar view -->
@@ -722,6 +758,12 @@ body.client-mode .client-portal-header{display:block;}
         <h1 class="cp-title" id="cpTitle">Olá! Revise seus posts</h1>
         <p class="cp-subtitle" id="cpSubtitle">Abaixo estão os conteúdos criados para você neste mês. Revise e aprove cada um.</p>
         <div class="cp-badge-bar" id="cpBadgeBar"></div>
+        <div class="cp-filter-bar" id="cpFilterBar" style="margin-top:.75rem;display:flex;gap:.375rem;flex-wrap:wrap;">
+          <button class="chip active" data-cpfilter="all" onclick="setCpFilter('all',this)">Todos</button>
+          <button class="chip" data-cpfilter="pendente" onclick="setCpFilter('pendente',this)">⏳ Pendente aprovação</button>
+          <button class="chip" data-cpfilter="aprovado" onclick="setCpFilter('aprovado',this)">✓ Aprovados</button>
+          <button class="chip" data-cpfilter="ajuste" onclick="setCpFilter('ajuste',this)">✎ Ajuste solicitado</button>
+        </div>
       </div>
     </div>
     <div id="clientPortalList" style="padding-bottom:3rem;"></div>
@@ -778,8 +820,8 @@ const CLIENTS_META = {
 };
 
 const TL = {post:'Estático',carrossel:'Carrossel',video:'Vídeo',stories:'Stories',reels:'Reels'};
-const SL = {pending:'Falta Iniciar',review:'Em Produção',done:'Pronto'};
-const SC = {pending:'review',review:'done',done:'pending'};
+const SL = {pending:'Falta iniciar', review:'Aguardando aprovação', approved:'Aprovado', done:'Programado'};
+const SC = {pending:'review', review:'approved', approved:'done', done:'pending'};
 
 const TASKS = [
   // ── Instituto Adara ─ Abril 2026 ──────────────────────────
@@ -899,14 +941,15 @@ function switchSection(s) {
 function updateStats() {
   const tasks = allPosts();
   const tot = tasks.length;
-  const p = tasks.filter(t => state.statuses[t.id] === 'pending').length;
-  const r = tasks.filter(t => state.statuses[t.id] === 'review').length;
-  const d = tasks.filter(t => state.statuses[t.id] === 'done').length;
+  const p    = tasks.filter(t => state.statuses[t.id] === 'pending').length;
+  const r    = tasks.filter(t => state.statuses[t.id] === 'review').length;
+  const ap   = tasks.filter(t => state.statuses[t.id] === 'approved').length;
+  const d    = tasks.filter(t => state.statuses[t.id] === 'done').length;
   const pendingAprov = tasks.filter(t => !approvals[t.id] || approvals[t.id].status === 'pendente').length;
-  document.getElementById('cnt-p').textContent = p;
-  document.getElementById('cnt-r').textContent = r;
-  document.getElementById('cnt-d').textContent = d;
-  document.getElementById('cnt-aprov').textContent = pendingAprov;
+  document.getElementById('cnt-p').textContent        = p;
+  document.getElementById('cnt-r').textContent        = r;
+  document.getElementById('cnt-approved').textContent = ap;
+  document.getElementById('cnt-done').textContent     = d;
   const badgeEl = document.getElementById('badgePendente');
   badgeEl.textContent = pendingAprov;
   badgeEl.style.display = pendingAprov > 0 ? '' : 'none';
@@ -1109,8 +1152,8 @@ function closeModal() {
   state.openId = null;
 }
 function renderStatusOpts(active) {
-  const opts = ['pending','review','done'];
-  const labels = {pending:'Falta Iniciar', review:'Em Produção', done:'Pronto e Programado'};
+  const opts = ['pending','review','approved','done'];
+  const labels = {pending:'Falta iniciar', review:'Aguardando aprovação', approved:'Aprovado', done:'Programado'};
   document.getElementById('statusOpts').innerHTML = opts.map(s => `
     <button class="status-opt opt-${s}${s===active?' sel':''}" onclick="setStatus('${s}')">
       <span class="opt-dot"></span>${labels[s]}${s===active?'<span class="opt-check">✓</span>':''}
@@ -1273,6 +1316,11 @@ function renderAprovador() {
     const st = aprov.status;
     const stLabels = {pendente:'Aguardando', aprovado:'Aprovado', reprovado:'Reprovado', ajuste:'Ajuste solicitado'};
     const dayStr = p.d ? `${DAY_NAMES_FULL[getDayOfWeek(currentYear, p.m !== undefined ? p.m : currentMonth, p.d)]}, ${p.d} de ${MONTH_NAMES[p.m !== undefined ? p.m : currentMonth]}` : '—';
+    // Extract client comments for highlight
+    const clientComments = (aprov.comments || []).filter(c => c.from === 'cliente');
+    const ajusteHighlight = st === 'ajuste' && clientComments.length
+      ? `<div class="aprov-adjust-highlight"><strong>✎ Ajuste solicitado pelo cliente</strong>${clientComments.map(c => `<div>${c.text}</div>`).join('')}</div>`
+      : '';
     const commentsHtml = aprov.comments && aprov.comments.length ?
       `<div class="comments-thread">${aprov.comments.map(c => `
         <div class="comment-item">
@@ -1292,6 +1340,7 @@ function renderAprovador() {
         </div>
         <span class="aprov-status ${st}"><span class="aprov-sdot"></span>${stLabels[st]}</span>
       </div>
+      ${ajusteHighlight}
       ${p.caption ? `<div class="aprov-card-body"><div class="caption-block">${p.caption.replace(/\n/g,'<br>')}</div>${p.files?`<a href="${p.files}" class="files-link" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><path d="M9 2v5h5"/></svg>Ver arquivos</a>` : ''}
       </div>` : ''}
       ${commentsHtml}
@@ -1305,6 +1354,9 @@ function renderAprovador() {
           </button>
           <button class="btn-aprov reprovar" onclick="openCommentZone('${p.id}','reprovado')">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 2l12 12M14 2L2 14"/></svg>Reprovar
+          </button>
+          <button class="btn-aprov" style="opacity:.6" onclick="resetAprov('${p.id}')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8a6 6 0 1 0 1.5-4M2 2v4h4"/></svg>Resetar
           </button>
         </div>
       </div>
@@ -1345,6 +1397,17 @@ function confirmComment(id) {
   save(); closeCommentZone(id); updateStats(); renderAprovador();
   toast({ajuste:'Ajuste solicitado', reprovado:'Post reprovado'}[action] || 'Atualizado');
 }
+
+function resetAprov(id) {
+  if (!approvals[id]) approvals[id] = {status:'pendente', comments:[]};
+  approvals[id].status = 'pendente';
+  approvals[id].comments = [];
+  // Also reset production status back to review (aguardando aprovação)
+  if (state.statuses[id] === 'approved') state.statuses[id] = 'review';
+  save(); updateStats(); renderAprovador();
+  toast('↺ Aprovação resetada para pendente');
+}
+
 function setAprov(id, status) {
   if (!approvals[id]) approvals[id] = {status:'pendente', comments:[]};
   approvals[id].status = status;
@@ -1572,7 +1635,7 @@ function renderClientPortal(clientId) {
 
     const typeColor = TYPE_COLORS[p.t] || '#666';
 
-    return `<div class="client-aprov-card" id="cpc-${p.id}">
+    return `<div class="client-aprov-card" data-aprov-status="${st}" id="cpc-${p.id}">
       <div class="client-aprov-grid">
         <div class="client-aprov-media" style="background:${typeColor}18;">
           <span class="type-label" style="background:${typeColor}">${TYPE_ICONS[p.t]||p.t}</span>
@@ -1622,6 +1685,12 @@ function renderClientPortal(clientId) {
     </div>`;
   }).join('');
 
+  // Re-apply current filter after render
+  if (cpFilter !== 'all') {
+    const activeBtn = document.querySelector(`[data-cpfilter="${cpFilter}"]`);
+    setCpFilter(cpFilter, activeBtn);
+  }
+
   // Update badge bar
   const pending = posts.filter(p => !approvals[p.id] || approvals[p.id].status === 'pendente').length;
   const approved = posts.filter(p => approvals[p.id] && approvals[p.id].status === 'aprovado').length;
@@ -1633,6 +1702,34 @@ function renderClientPortal(clientId) {
 }
 
 let cpCommentPending = {};
+let cpFilter = 'all';
+
+function setCpFilter(filter, btn) {
+  cpFilter = filter;
+  document.querySelectorAll('[data-cpfilter]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Show/hide cards based on filter
+  document.querySelectorAll('.client-aprov-card[data-aprov-status]').forEach(card => {
+    const st = card.dataset.aprovStatus;
+    const show = filter === 'all' || st === filter;
+    card.style.display = show ? '' : 'none';
+  });
+  // Show empty state if nothing visible
+  const list = document.getElementById('clientPortalList');
+  const visible = list.querySelectorAll('.client-aprov-card[data-aprov-status]:not([style*="none"])').length;
+  const emptyEl = list.querySelector('.cp-empty-filtered');
+  if (visible === 0) {
+    if (!emptyEl) {
+      const div = document.createElement('div');
+      div.className = 'empty-state cp-empty-filtered';
+      div.innerHTML = '<div class="empty-state-icon">🔍</div><div class="empty-state-title">Nenhum post nesta categoria</div>';
+      list.appendChild(div);
+    }
+  } else {
+    if (emptyEl) emptyEl.remove();
+  }
+}
+
 function openClientComment(id, action) {
   document.querySelectorAll('[id^="cpzone-"]').forEach(z => z.classList.remove('open'));
   cpCommentPending[id] = action;
@@ -1655,6 +1752,8 @@ function confirmClientComment(id) {
   if (!approvals[id]) approvals[id] = {status:'pendente', comments:[]};
   approvals[id].status = action;
   approvals[id].comments.push({from:'cliente', text: txt || '—', time: 'Agora'});
+  // Auto-update production status when client approves
+  if (action === 'aprovado') state.statuses[id] = 'approved';
   save(); updateStats();
   const clientId = allPosts().find(p => p.id === id)?.p;
   if (clientId) renderClientPortal(clientId);
@@ -1663,20 +1762,15 @@ function confirmClientComment(id) {
 function clientAprov(id, status) {
   if (!approvals[id]) approvals[id] = {status:'pendente', comments:[]};
   approvals[id].status = status;
+  // Auto-update production status when client approves
+  if (status === 'aprovado') state.statuses[id] = 'approved';
   save(); updateStats();
   const clientId = allPosts().find(p => p.id === id)?.p;
   if (clientId) renderClientPortal(clientId);
   toast('✓ Post aprovado!');
 }
 
-// Check URL for client portal mode
-(function checkClientPortal() {
-  const params = new URLSearchParams(window.location.search);
-  const clientId = params.get('cliente');
-  if (clientId && CLIENTS_META[clientId]) {
-    initClientPortal(clientId);
-  }
-})();
+// checkClientPortal is called after init (see below)
 
 // ════════════════════════════════════════════
 // INIT
@@ -1684,6 +1778,15 @@ function clientAprov(id, status) {
 buildCalendar();
 updateStats();
 renderClientes();
+
+// Check URL for client portal mode — runs AFTER init so all DOM & state is ready
+(function checkClientPortal() {
+  const params = new URLSearchParams(window.location.search);
+  const clientId = params.get('cliente');
+  if (clientId && CLIENTS_META[clientId]) {
+    initClientPortal(clientId);
+  }
+})();
 
 // ════════════════════════════════════════════
 // SYNC CROSS-TAB (cliente aprova → painel atualiza)
@@ -1778,6 +1881,13 @@ window.addEventListener('storage', function(e) {
     if (state.calView === 'list') buildList();
     const aprovEl = document.getElementById('sec-aprovador');
     if (aprovEl && aprovEl.classList.contains('active')) renderAprovador();
+    // Update client portal if active
+    const cpEl = document.getElementById('sec-clienteportal');
+    if (cpEl && cpEl.classList.contains('active')) {
+      const params = new URLSearchParams(window.location.search);
+      const cid = params.get('cliente');
+      if (cid) renderClientPortal(cid);
+    }
 
     // Notifica se aprovações mudaram
     if (JSON.stringify(approvals) !== prevApprovals) {
