@@ -616,8 +616,8 @@ body.client-mode .client-portal-header{display:block;}
         <button class="chip" data-sfilter="done">Programado</button>
         <div class="filter-sep"></div>
         <button class="chip active" data-tfilter="all">✦ Todos tipos</button>
-        <button class="chip" data-tfilter="static">🖼 Agatha</button>
-        <button class="chip" data-tfilter="motion">🎬 Alexia</button>
+        <button class="chip" data-tfilter="static">🖼 Agatha (Adara, Renato, Emily)</button>
+        <button class="chip" data-tfilter="motion">🎬 Alexia (Dr. César + motion)</button>
       </div>
     </section>
     <!-- Calendar view -->
@@ -964,8 +964,11 @@ function updateStats() {
 function taskVisible(t) {
   if (state.pf !== 'all' && t.p !== state.pf) return false;
   if (state.sf !== 'all' && state.statuses[t.id] !== state.sf) return false;
-  if (state.tf === 'static'  && !['post','carrossel'].includes(t.t)) return false;
-  if (state.tf === 'motion'  && !['reels','video','stories'].includes(t.t)) return false;
+  // Dr. César é 100% Alexia — todos os posts dele entram no filtro 'motion'
+  const isAlexia = t.p === 'cesar' || ['reels','video','stories'].includes(t.t);
+  const isAgatha = t.p !== 'cesar' && ['post','carrossel'].includes(t.t);
+  if (state.tf === 'static' && !isAgatha) return false;
+  if (state.tf === 'motion' && !isAlexia) return false;
   return true;
 }
 
