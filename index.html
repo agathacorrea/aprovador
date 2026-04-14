@@ -616,8 +616,8 @@ body.client-mode .client-portal-header{display:block;}
         <button class="chip" data-sfilter="done">Programado</button>
         <div class="filter-sep"></div>
         <button class="chip active" data-tfilter="all">✦ Todos tipos</button>
-        <button class="chip" data-tfilter="static">🖼 Agatha </button>
-        <button class="chip" data-tfilter="motion">🎬 Alexia </button>
+        <button class="chip" data-tfilter="static">🖼 Agatha (Adara, Renato, Emily)</button>
+        <button class="chip" data-tfilter="motion">🎬 Alexia (Dr. César + motion)</button>
       </div>
     </section>
     <!-- Calendar view -->
@@ -825,58 +825,45 @@ const SC = {pending:'review', review:'approved', approved:'done', done:'pending'
 
 const TASKS = [
   // ── Instituto Adara ─ Abril 2026 ──────────────────────────
-  {id:'aa-9',  p:'adara', d:9,  m:3, t:'reels',     title:'Capsulite adesiva',                                         obs:'Colab Dr. César'},
-  {id:'aa-11', p:'adara', d:11, m:3, t:'reels',     title:'Seu colágeno está diminuindo e você nem percebeu',           obs:'Colab Emily'},
-  {id:'aa-13', p:'adara', d:13, m:3, t:'carrossel', title:'Você pode ter lipedema e não saber'},
-  {id:'aa-14', p:'adara', d:14, m:3, t:'post',      title:'Quando a dor deixa de ser normal'},
-  {id:'aa-15', p:'adara', d:15, m:3, t:'reels',     title:'3 sinais de que seu metabolismo não está normal'},
-  {id:'aa-17', p:'adara', d:17, m:3, t:'reels',     title:'Seu corpo não responde como antes? Entenda o porquê'},
-  {id:'aa-18', p:'adara', d:18, m:3, t:'carrossel', title:'Por que você não consegue emagrecer?'},
+  {id:'aa-16', p:'adara', d:16, m:3, t:'post',      title:'Você não precisa aceitar esse corpo cansado'},
+  {id:'aa-18', p:'adara', d:18, m:3, t:'reels',     title:'3 coisas que estão te atrapalhando'},
   {id:'aa-20', p:'adara', d:20, m:3, t:'reels',     title:"O que faz um rosto parecer 'cansado' mesmo sem idade"},
   {id:'aa-21', p:'adara', d:21, m:3, t:'carrossel', title:'O que são hormônios e como afetam seu corpo'},
-  {id:'aa-22', p:'adara', d:22, m:3, t:'post',      title:'O que não fazer após uma lesão',                            obs:'Colab Dr. C'},
+  {id:'aa-22', p:'adara', d:22, m:3, t:'post',      title:'O que não fazer após uma lesão',                            obs:'Colab - Dr. C'},
   {id:'aa-23', p:'adara', d:23, m:3, t:'post',      title:'Antes de fazer um procedimento estético'},
+  {id:'aa-24', p:'adara', d:24, m:3, t:'post',      title:'Post #24'},
   {id:'aa-25', p:'adara', d:25, m:3, t:'carrossel', title:'O que você faz vs o que deveria fazer (cuidados com a pele)'},
+  {id:'aa-27', p:'adara', d:27, m:3, t:'post',      title:'Post #27'},
 
   // ── Emily Robadelli ─ Abril 2026 ──────────────────────────
-  {id:'ae-7',  p:'emily', d:7,  m:3, t:'post',      title:'Estética não é luxo. É sobre se sentir bem na própria pele.', obs:'Foto da Emily'},
-  {id:'ae-8',  p:'emily', d:8,  m:3, t:'carrossel', title:'3 sinais de que sua pele precisa de tratamento'},
-  {id:'ae-9',  p:'emily', d:9,  m:3, t:'reels',     title:'Bastidores + detalhes do atendimento'},
-  {id:'ae-10', p:'emily', d:10, m:3, t:'carrossel', title:'Limpeza de pele comum x estética avançada'},
-  {id:'ae-12', p:'emily', d:12, m:3, t:'stories',   title:'Story interativo — O que você mais quer melhorar na sua pele?'},
-  {id:'ae-13', p:'emily', d:13, m:3, t:'reels',     title:'Procedimento em close'},
   {id:'ae-15', p:'emily', d:15, m:3, t:'carrossel', title:'Erros que estão envelhecendo sua pele'},
   {id:'ae-17', p:'emily', d:17, m:3, t:'post',      title:'Autoestima também se constrói no espelho.'},
-  {id:'ae-19', p:'emily', d:19, m:3, t:'stories',   title:'Story interativo (Quiz de perguntas)'},
+  {id:'ae-19', p:'emily', d:19, m:3, t:'stories',   title:'Story interativo — Quiz de perguntas'},
   {id:'ae-20', p:'emily', d:20, m:3, t:'carrossel', title:'Tratamentos ideais para: acne | manchas | flacidez'},
   {id:'ae-22', p:'emily', d:22, m:3, t:'post',      title:'Sua rotina de skincare pode estar piorando sua pele'},
   {id:'ae-24', p:'emily', d:24, m:3, t:'carrossel', title:'Guia rápido pra cuidar da pele antes de dormir'},
-  {id:'ae-26', p:'emily', d:26, m:3, t:'stories',   title:'Story interativo (Verdade ou mito)'},
+  {id:'ae-26', p:'emily', d:26, m:3, t:'stories',   title:'Story interativo — Verdade ou mito'},
   {id:'ae-27', p:'emily', d:27, m:3, t:'post',      title:'O que acelera o envelhecimento da pele (e você faz todo dia)'},
   {id:'ae-29', p:'emily', d:29, m:3, t:'reels',     title:'Quanto tempo leva pra ver resultado na pele?'},
 
   // ── Dr. César Prota ─ Abril 2026 ──────────────────────────
-  {id:'ac-9',  p:'cesar', d:9,  m:3, t:'reels',     title:'Capsulite Adesiva'},
-  {id:'ac-11', p:'cesar', d:11, m:3, t:'post',      title:'Seu corpo não falha. Ele se adapta.'},
-  {id:'ac-14', p:'cesar', d:14, m:3, t:'reels',     title:'Lesão do menisco'},
-  {id:'ac-16', p:'cesar', d:16, m:3, t:'post',      title:'Você não perdeu movimento à toa'},
-  {id:'ac-18', p:'cesar', d:18, m:3, t:'reels',     title:'Crossfit'},
-  {id:'ac-21', p:'cesar', d:21, m:3, t:'post',      title:'Diagnóstico certo muda o tratamento'},
+  {id:'ac-14', p:'cesar', d:14, m:3, t:'reels',     title:'Restrição do movimento'},
+  {id:'ac-15', p:'cesar', d:15, m:3, t:'reels',     title:'Dor no joelho Crossfit'},
+  {id:'ac-17', p:'cesar', d:17, m:3, t:'carrossel', title:'O que realmente ajuda na recuperação (além de remédio)'},
+  {id:'ac-21', p:'cesar', d:21, m:3, t:'reels',     title:'Reels #21'},
   {id:'ac-23', p:'cesar', d:23, m:3, t:'carrossel', title:'Erros comuns de quem tenta tratar dor sozinho'},
   {id:'ac-25', p:'cesar', d:25, m:3, t:'reels',     title:'Cirurgia'},
-  {id:'ac-28', p:'cesar', d:28, m:3, t:'carrossel', title:'O que realmente ajuda na recuperação (além de remédio)'},
-  {id:'ac-30', p:'cesar', d:30, m:3, t:'reels',     title:'Desgaste artrose'},
+  {id:'ac-28', p:'cesar', d:28, m:3, t:'carrossel', title:'Situações que sobrecarregam seu joelho'},
+  {id:'ac-30', p:'cesar', d:30, m:3, t:'reels',     title:'Reels #30'},
 
   // ── Dr. Renato Andrade ─ Abril 2026 ────────────────────────
-  {id:'ar-10', p:'renato', d:10, m:3, t:'carrossel', title:'Oscilar peso rápido não é normal'},
-  {id:'ar-13', p:'renato', d:13, m:3, t:'reels',     title:'Sabor emagrecimento',                                       obs:'Colab Adara'},
-  {id:'ar-14', p:'renato', d:14, m:3, t:'post',      title:'Fome desregulada não é falta de controle'},
-  {id:'ar-15', p:'renato', d:15, m:3, t:'carrossel', title:'Fatores invisíveis que impactam seu peso'},
-  {id:'ar-17', p:'renato', d:17, m:3, t:'reels',     title:'Estradiol'},
-  {id:'ar-21', p:'renato', d:21, m:3, t:'carrossel', title:'Por que o acompanhamento faz diferença (Tirze)'},
+  {id:'ar-15', p:'renato', d:15, m:3, t:'reels',     title:'Suplementação'},
+  {id:'ar-17', p:'renato', d:17, m:3, t:'carrossel', title:'Ações da Tirzepatida que quase ninguém imagina'},
+  {id:'ar-19', p:'renato', d:19, m:3, t:'reels',     title:'Estradiol'},
+  {id:'ar-20', p:'renato', d:20, m:3, t:'reels',     title:'Tize do Paraguai'},
   {id:'ar-22', p:'renato', d:22, m:3, t:'reels',     title:'Comer pouco'},
-  {id:'ar-24', p:'renato', d:24, m:3, t:'reels',     title:'O que acontece quando seus hormônios estão desregulados'},
-  {id:'ar-28', p:'renato', d:28, m:3, t:'reels',     title:'O que a tirzepatida faz no seu corpo (explicado fácil)'},
+  {id:'ar-24', p:'renato', d:24, m:3, t:'carrossel', title:'Fatores invisíveis que impactam seu peso'},
+  {id:'ar-27', p:'renato', d:27, m:3, t:'reels',     title:'O que a tirzepatida faz no seu corpo (explicado fácil)'},
 ];
 
 // ════════════════════════════════════════════
