@@ -254,6 +254,7 @@ header{background:var(--surface);border-bottom:1px solid var(--divider);padding:
 .comment-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:700;flex-shrink:0;margin-top:.1rem;}
 .comment-avatar.av-you{background:var(--primary-hl);color:var(--primary-h);}
 .comment-avatar.av-client{background:var(--purple-hl);color:var(--purple-txt);}
+.av-agency{background:var(--primary-hl,rgba(0,120,80,.12));color:var(--primary);}
 .comment-bubble{flex:1;background:var(--offset);border-radius:var(--r-lg);padding:.5rem .75rem;font-size:.8125rem;line-height:1.5;}
 .comment-who{font-size:.6875rem;font-weight:600;color:var(--muted);margin-bottom:.125rem;}
 
@@ -525,6 +526,109 @@ body.client-mode .client-portal-header{display:block;}
 .cp-filter-bar .chip { font-size: .8125rem; }
 .cp-filter-bar .chip.active { background: var(--text); color: var(--inverse); border-color: var(--text); }
 
+
+/* ── Client stat cards ────────────────────────────── */
+.client-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: .625rem;
+  margin-bottom: .75rem;
+}
+.cstat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: .75rem 1rem;
+  cursor: pointer;
+  transition: box-shadow .18s, border-color .18s;
+  border-left: 3px solid var(--border);
+}
+.cstat-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.cstat-card.active { border-left-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb),.15); }
+.cstat-head { display:flex; align-items:center; gap:.4rem; margin-bottom:.4rem; }
+.cstat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.cstat-name { font-size:.8rem; font-weight:700; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cstat-total { font-size:1.5rem; font-weight:800; line-height:1; margin-bottom:.25rem; color:var(--text); }
+.cstat-pills { display:flex; gap:.3rem; flex-wrap:wrap; }
+.cstat-pill { font-size:.65rem; font-weight:600; padding:.1rem .4rem; border-radius:var(--r-full); }
+.cstat-pill.ap { background:var(--success-hl); color:var(--success-txt); }
+.cstat-pill.pd { background:var(--gold-hl); color:var(--gold-txt); }
+.cstat-pill.pr { background:var(--surface-2); color:var(--muted); }
+
+
+/* Agency reply zone in admin card */
+.agency-reply-zone { padding: .625rem 1.125rem .75rem; border-top: 1px solid var(--divider); background: var(--surface-2); display:none; }
+.agency-reply-zone.open { display:block; }
+.agency-reply-head { font-size:.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:.5rem; }
+.agency-reply-row { display:flex; gap:.5rem; align-items:flex-end; }
+.agency-reply-input { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:.5rem .75rem; font-size:.8125rem; font-family:var(--font); color:var(--text); resize:none; min-height:60px; }
+.agency-reply-input:focus { outline:none; border-color:var(--primary); }
+.agency-reply-send { background:var(--primary); color:white; border:none; border-radius:var(--r-full); padding:.5rem .875rem; font-size:.8125rem; font-weight:600; cursor:pointer; font-family:var(--font); white-space:nowrap; }
+
+
+/* Art preview in client portal */
+.art-preview-block { margin: .75rem 0; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); }
+.art-preview-frame { width:100%; height:340px; border:none; display:block; }
+.art-preview-btn-lg {
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: 1rem; font-size: .875rem; font-weight: 600; color: var(--primary);
+  text-decoration: none; background: var(--surface-2); border-radius: var(--r-lg);
+  border: 1.5px dashed var(--border); transition: background .18s;
+}
+.art-preview-btn-lg:hover { background: var(--primary-hl, rgba(0,120,80,.06)); }
+.art-preview-label { font-size:.7rem; color:var(--muted); text-align:center; padding:.4rem; }
+
+
+/* Month nav — ensure label is prominent */
+.cal-month-label { font-size: 1.05rem; font-weight: 800; }
+.cal-nav-btn { 
+  width:30px; height:30px; border-radius:var(--r-full); border:1px solid var(--border);
+  background:var(--surface); color:var(--text); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:.18s;
+}
+.cal-nav-btn:hover { background:var(--primary); color:white; border-color:var(--primary); }
+
+
+/* Nota interna */
+.modal-notes-section { margin-top: 1rem; }
+.modal-notes-lbl { font-size:.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:.4rem; display:flex; align-items:center; gap:.35rem; }
+.modal-notes-lbl svg { opacity:.6; }
+.modal-notes-input { width:100%; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r-lg); padding:.5rem .75rem; font-size:.8125rem; font-family:var(--font); color:var(--text); resize:none; min-height:64px; transition:border-color .18s; box-sizing:border-box; }
+.modal-notes-input:focus { outline:none; border-color:var(--primary); }
+.modal-notes-input::placeholder { color:var(--faint); }
+
+
+/* Checklist de entrega modal */
+.checklist-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:flex; align-items:center; justify-content:center; padding:1rem; display:none; }
+.checklist-overlay.open { display:flex; }
+.checklist-box { background:var(--surface); border-radius:var(--r-xl); padding:1.5rem; width:100%; max-width:380px; box-shadow:0 12px 40px rgba(0,0,0,.18); }
+.checklist-title { font-size:1rem; font-weight:800; margin-bottom:.25rem; }
+.checklist-sub { font-size:.8125rem; color:var(--muted); margin-bottom:1rem; }
+.checklist-items { display:flex; flex-direction:column; gap:.625rem; margin-bottom:1.25rem; }
+.checklist-item { display:flex; align-items:center; gap:.625rem; cursor:pointer; }
+.checklist-item input[type=checkbox] { width:16px; height:16px; accent-color:var(--primary); cursor:pointer; flex-shrink:0; }
+.checklist-item label { font-size:.875rem; cursor:pointer; }
+.checklist-actions { display:flex; gap:.5rem; }
+.checklist-btn-confirm { flex:1; background:var(--primary); color:white; border:none; border-radius:var(--r-full); padding:.625rem; font-size:.875rem; font-weight:700; cursor:pointer; font-family:var(--font); opacity:.5; transition:.18s; }
+.checklist-btn-confirm.ready { opacity:1; }
+.checklist-btn-cancel { background:var(--surface-2); color:var(--muted); border:1px solid var(--border); border-radius:var(--r-full); padding:.625rem 1rem; font-size:.875rem; cursor:pointer; font-family:var(--font); }
+
+
+/* Resumo diário */
+.daily-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1900; display:flex; align-items:center; justify-content:center; padding:1rem; }
+.daily-box { background:var(--surface); border-radius:var(--r-xl); padding:1.75rem; width:100%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,.18); }
+.daily-greeting { font-size:1.25rem; font-weight:800; margin-bottom:.2rem; }
+.daily-date { font-size:.8125rem; color:var(--muted); margin-bottom:1.25rem; }
+.daily-items { display:flex; flex-direction:column; gap:.625rem; margin-bottom:1.25rem; }
+.daily-item { display:flex; align-items:center; gap:.75rem; background:var(--surface-2); border-radius:var(--r-lg); padding:.625rem .875rem; }
+.daily-item-icon { font-size:1.1rem; flex-shrink:0; }
+.daily-item-text { font-size:.875rem; }
+.daily-item-text strong { font-weight:800; }
+.daily-item.alert { border-left:3px solid var(--danger); }
+.daily-item.ok { border-left:3px solid var(--success); }
+.daily-item.info { border-left:3px solid var(--blue); }
+.daily-btn { width:100%; background:var(--primary); color:white; border:none; border-radius:var(--r-full); padding:.75rem; font-size:.9rem; font-weight:700; cursor:pointer; font-family:var(--font); }
+
 </style>
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -581,12 +685,7 @@ body.client-mode .client-portal-header{display:block;}
 <div id="sec-calendario" class="section active">
   <div class="container">
     <section class="stats-section">
-      <div class="stats-grid">
-        <div class="stat-card s-pending"><span class="stat-num" id="cnt-p">0</span><span class="stat-label">Falta iniciar</span></div>
-        <div class="stat-card s-review"><span class="stat-num" id="cnt-r">0</span><span class="stat-label">Aguardando aprovação</span></div>
-        <div class="stat-card s-done"><span class="stat-num" id="cnt-approved">0</span><span class="stat-label">Aprovado</span></div>
-        <div class="stat-card s-rejected"><span class="stat-num" id="cnt-done">0</span><span class="stat-label">Programado</span></div>
-      </div>
+      <div class="client-stats-grid" id="clientStatsGrid"></div>
       <div class="progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
         <div class="progress-lbl" id="pLbl">0 de 0 tarefas concluídas</div>
@@ -648,7 +747,7 @@ body.client-mode .client-portal-header{display:block;}
     <div class="aprov-wrap">
       <div class="aprov-filters">
         <div class="filter-row" id="aprovFilterRow">
-          <button class="chip active" data-apfilter="all">Todos</button>
+          <button class="chip active" data-apfilter="all">✎ Ajustes e Reprovados</button>
           <button class="chip" data-apfilter="pendente">Aguardando</button>
           <button class="chip" data-apfilter="aprovado">Aprovados</button>
           <button class="chip" data-apfilter="ajuste">Ajuste</button>
@@ -791,6 +890,38 @@ body.client-mode .client-portal-header{display:block;}
       <div class="modal-caption-lbl">Copy / Legenda</div>
       <div class="modal-caption-text" id="modalCaptionText"></div>
     </div>
+    <div class="modal-notes-section">
+      <div class="modal-notes-lbl">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V3a1 1 0 00-1-1z"/><path d="M5 6h6M5 9h4"/></svg>
+        Nota interna (só você e a Alexia veem)
+      </div>
+      <textarea class="modal-notes-input" id="modalNotesInput" placeholder="Referências, link em edição, observações de produção..." oninput="saveNote(this.value)"></textarea>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--divider)">
+      <button class="btn-aprov" onclick="duplicatePost(state.openId)" style="flex:1;justify-content:center">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M2 11V3a1 1 0 011-1h8"/></svg>
+        Duplicar post
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Checklist de entrega -->
+<div class="checklist-overlay" id="checklistOverlay">
+  <div class="checklist-box">
+    <div class="checklist-title">📋 Checklist de entrega</div>
+    <div class="checklist-sub">Antes de enviar para aprovação do cliente, confirme:</div>
+    <div class="checklist-items">
+      <label class="checklist-item"><input type="checkbox" id="chk1" onchange="updateChecklist()"><span>Arte finalizada e exportada</span></label>
+      <label class="checklist-item"><input type="checkbox" id="chk2" onchange="updateChecklist()"><span>Legenda revisada e sem erros</span></label>
+      <label class="checklist-item"><input type="checkbox" id="chk3" onchange="updateChecklist()"><span>Link do Drive/Canva adicionado</span></label>
+      <label class="checklist-item"><input type="checkbox" id="chk4" onchange="updateChecklist()"><span>Post no dia certo do calendário</span></label>
+    </div>
+    <div class="checklist-actions">
+      <button class="checklist-btn-cancel" onclick="closeChecklist()">Cancelar</button>
+      <button class="checklist-btn-confirm" id="checklistConfirm" onclick="confirmChecklist()" disabled>Enviar para aprovação ✓</button>
+    </div>
   </div>
 </div>
 
@@ -889,7 +1020,7 @@ try {
 TASKS.forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'; });
 
 function save() {
-  try { localStorage.setItem('aprovai-v1', JSON.stringify({statuses:state.statuses, deletedIds:state.deletedIds||[], approvals, extraPosts, nextId})); } catch(e) {}
+  try { localStorage.setItem('aprovai-v1', JSON.stringify({statuses:state.statuses, deletedIds:state.deletedIds||[], approvals, extraPosts, nextId, notes})); } catch(e) {}
 }
 
 function allPosts() { const del = state.deletedIds || []; return [...TASKS.filter(t => !del.includes(t.id)), ...extraPosts]; }
@@ -928,15 +1059,31 @@ function switchSection(s) {
 function updateStats() {
   const tasks = allPosts();
   const tot = tasks.length;
-  const p    = tasks.filter(t => state.statuses[t.id] === 'pending').length;
-  const r    = tasks.filter(t => state.statuses[t.id] === 'review').length;
-  const ap   = tasks.filter(t => state.statuses[t.id] === 'approved').length;
-  const d    = tasks.filter(t => state.statuses[t.id] === 'done').length;
+  const d   = tasks.filter(t => state.statuses[t.id] === 'done').length;
   const pendingAprov = tasks.filter(t => !approvals[t.id] || approvals[t.id].status === 'pendente').length;
-  document.getElementById('cnt-p').textContent        = p;
-  document.getElementById('cnt-r').textContent        = r;
-  document.getElementById('cnt-approved').textContent = ap;
-  document.getElementById('cnt-done').textContent     = d;
+
+  // Per-client stat cards
+  const grid = document.getElementById('clientStatsGrid');
+  if (grid) {
+    const CLIENT_COLORS = {adara:'var(--primary)', emily:'var(--purple)', renato:'var(--blue)', cesar:'#8a3a2a'};
+    grid.innerHTML = Object.values(CLIENTS_META).map(c => {
+      const cTasks = tasks.filter(t => t.p === c.id);
+      const cAp    = cTasks.filter(t => approvals[t.id] && approvals[t.id].status === 'aprovado').length;
+      const cPd    = cTasks.filter(t => !approvals[t.id] || approvals[t.id].status === 'pendente').length;
+      const cPr    = cTasks.filter(t => approvals[t.id] && approvals[t.id].status === 'programado').length;
+      const col    = CLIENT_COLORS[c.id] || 'var(--muted)';
+      const isAct  = state.pf === c.id;
+      return `<div class="cstat-card${isAct?' active':''}" style="border-left-color:${col}" onclick="filterByClient('${c.id}')">
+        <div class="cstat-head"><span class="cstat-dot" style="background:${col}"></span><span class="cstat-name">${c.name.split(' ')[0]} ${c.name.split(' ')[1]||''}</span></div>
+        <div class="cstat-total">${cTasks.length}</div>
+        <div class="cstat-pills">
+          <span class="cstat-pill ap">✓ ${cAp} aprov.</span>
+          <span class="cstat-pill pd">⏳ ${cPd} pend.</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
   const badgeEl = document.getElementById('badgePendente');
   badgeEl.textContent = pendingAprov;
   badgeEl.style.display = pendingAprov > 0 ? '' : 'none';
@@ -1135,6 +1282,9 @@ function openModal(id) {
   } else {
     document.getElementById('modalCaptionSection').style.display = 'none';
   }
+  // Load internal note
+  const noteEl = document.getElementById('modalNotesInput');
+  if (noteEl) noteEl.value = notes[id] || '';
   document.getElementById('modal').classList.add('open');
 }
 function closeModal() {
@@ -1151,10 +1301,68 @@ function renderStatusOpts(active) {
 }
 function setStatus(newSt) {
   if (!state.openId) return;
+  if (newSt === 'review') { openChecklist(state.openId); return; }
   state.statuses[state.openId] = newSt;
   save(); renderStatusOpts(newSt); updateStats(); applyCalFilters();
   if (state.calView === 'list') buildList();
   toast(SL[newSt]);
+}
+
+let _checklistTargetId = null;
+function openChecklist(id) {
+  _checklistTargetId = id;
+  ['chk1','chk2','chk3','chk4'].forEach(id => { const el = document.getElementById(id); if(el) el.checked = false; });
+  updateChecklist();
+  document.getElementById('checklistOverlay').classList.add('open');
+}
+function closeChecklist() {
+  document.getElementById('checklistOverlay').classList.remove('open');
+  _checklistTargetId = null;
+}
+function updateChecklist() {
+  const all = ['chk1','chk2','chk3','chk4'].every(id => document.getElementById(id)?.checked);
+  const btn = document.getElementById('checklistConfirm');
+  btn.disabled = !all;
+  btn.classList.toggle('ready', all);
+}
+function confirmChecklist() {
+  if (!_checklistTargetId) return;
+  state.statuses[_checklistTargetId] = 'review';
+  save(); renderStatusOpts('review'); updateStats(); applyCalFilters();
+  if (state.calView === 'list') buildList();
+  closeChecklist();
+  toast('🚀 Enviado para aprovação do cliente!');
+}
+
+
+function saveNote(val) {
+  if (!state.openId) return;
+  if (val.trim()) notes[state.openId] = val;
+  else delete notes[state.openId];
+  save();
+}
+
+function duplicatePost(id) {
+  const src = allPosts().find(t => t.id === id);
+  if (!src) return;
+  const newId = 'dup-' + (nextId++);
+  const copy = {
+    id: newId,
+    p: src.p,
+    d: src.d,
+    m: src.m !== undefined ? src.m : currentMonth,
+    t: src.t,
+    title: src.title + ' (cópia)',
+    caption: src.caption || '',
+    files: src.files || '',
+    obs: src.obs || ''
+  };
+  extraPosts.push(copy);
+  state.statuses[newId] = 'pending';
+  save(); buildCalendar(); updateStats();
+  if (state.calView === 'list') buildList();
+  closeModal();
+  toast('✓ Post duplicado com sucesso!');
 }
 
 function deletePost(id) {
@@ -1240,6 +1448,69 @@ document.querySelectorAll('[data-apclient]').forEach(btn => {
   });
 });
 
+
+
+function showDailySummary() {
+  const today = new Date();
+  const todayKey = today.toISOString().split('T')[0];
+  if (localStorage.getItem('aprovai-daily') === todayKey) return; // já mostrou hoje
+
+  const tasks = allPosts();
+  const todayPosts = tasks.filter(t => {
+    const m = t.m !== undefined ? t.m : currentMonth;
+    return t.d === TODAY_DAY && m === TODAY_MONTH;
+  });
+  const ajustes = tasks.filter(t => approvals[t.id] && ['ajuste','reprovado'].includes(approvals[t.id].status));
+  const pendAprov = tasks.filter(t => state.statuses[t.id] === 'review');
+  const programados = tasks.filter(t => state.statuses[t.id] === 'done').length;
+  const total = tasks.length;
+
+  const dayNames = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  const monthNames = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const dateStr = `${dayNames[today.getDay()]}, ${today.getDate()} de ${monthNames[today.getMonth()]}`;
+  const hour = today.getHours();
+  const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+
+  const items = [];
+  if (todayPosts.length > 0)
+    items.push({cls:'alert', icon:'📅', html:`<strong>${todayPosts.length} post${todayPosts.length>1?'s':''}</strong> para produzir hoje`});
+  if (ajustes.length > 0)
+    items.push({cls:'alert', icon:'✎', html:`<strong>${ajustes.length} ajuste${ajustes.length>1?'s':''}</strong> solicitado${ajustes.length>1?'s':''} pelos clientes`});
+  if (pendAprov.length > 0)
+    items.push({cls:'info', icon:'⏳', html:`<strong>${pendAprov.length} post${pendAprov.length>1?'s':''}</strong> aguardando aprovação do cliente`});
+  items.push({cls:'ok', icon:'✓', html:`<strong>${programados} de ${total}</strong> posts programados este mês`});
+  if (ajustes.length === 0 && pendAprov.length === 0)
+    items.push({cls:'ok', icon:'🎉', html:`Tudo em ordem! Nenhuma pendência hoje.`});
+
+  const overlay = document.createElement('div');
+  overlay.className = 'daily-overlay';
+  overlay.id = 'dailyOverlay';
+  overlay.innerHTML = `
+    <div class="daily-box">
+      <div class="daily-greeting">${greeting}, Agatha! 👋</div>
+      <div class="daily-date">${dateStr}</div>
+      <div class="daily-items">${items.map(i => `<div class="daily-item ${i.cls}"><span class="daily-item-icon">${i.icon}</span><span class="daily-item-text">${i.html}</span></div>`).join('')}</div>
+      <button class="daily-btn" onclick="closeDailySummary()">Começar o dia 🚀</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  localStorage.setItem('aprovai-daily', todayKey);
+}
+function closeDailySummary() {
+  const el = document.getElementById('dailyOverlay');
+  if (el) el.remove();
+}
+
+function filterByClient(clientId) {
+  const isActive = state.pf === clientId;
+  state.pf = isActive ? 'all' : clientId;
+  document.querySelectorAll('[data-filter]').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === state.pf || (state.pf === 'all' && b.dataset.filter === 'all'));
+  });
+  applyCalFilters();
+  if (state.calView === 'list') buildList();
+  updateStats();
+}
+
 function applyCalFilters() {
   document.querySelectorAll('.cal-chip[data-id]').forEach(el => {
     const id = el.dataset.id;
@@ -1293,12 +1564,17 @@ function renderAprovador() {
   const af = state.aprovFilter;
   const ac = state.aprovClient;
   if (ac !== 'all') posts = posts.filter(p => p.p === ac);
-  if (af !== 'all') posts = posts.filter(p =>
-    (approvals[p.id] && approvals[p.id].status === af) ||
-    (af === 'pendente' && (!approvals[p.id] || approvals[p.id].status === 'pendente'))
-  );
+  // Por padrão, só mostra ajustes e reprovados — a não ser que tenha filtro explícito
+  if (af === 'all') {
+    posts = posts.filter(p => approvals[p.id] && ['ajuste','reprovado'].includes(approvals[p.id].status));
+  } else {
+    posts = posts.filter(p =>
+      (approvals[p.id] && approvals[p.id].status === af) ||
+      (af === 'pendente' && (!approvals[p.id] || approvals[p.id].status === 'pendente'))
+    );
+  }
   if (!posts.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-title">Nada por aqui</div><div class="empty-state-sub">Adicione posts pelo botão "Novo Post"</div></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-title">Nenhum ajuste ou reprovação pendente</div><div class="empty-state-sub">Adicione posts pelo botão "Novo Post"</div></div>`;
     return;
   }
   list.innerHTML = posts.map(p => {
@@ -1334,6 +1610,13 @@ function renderAprovador() {
       ${p.caption ? `<div class="aprov-card-body"><div class="caption-block">${p.caption.replace(/\n/g,'<br>')}</div>${p.files?`<a href="${p.files}" class="files-link" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><path d="M9 2v5h5"/></svg>Ver arquivos</a>` : ''}
       </div>` : ''}
       ${commentsHtml}
+      <div class="agency-reply-zone" id="areply-${p.id}">
+        <div class="agency-reply-head">💬 Sua resposta ao cliente</div>
+        <div class="agency-reply-row">
+          <textarea class="agency-reply-input" id="areplyTxt-${p.id}" placeholder="Escreva sua resposta..."></textarea>
+          <button class="agency-reply-send" onclick="sendAgencyReply('${p.id}')">Enviar</button>
+        </div>
+      </div>
       <div class="aprov-card-footer">
         <div class="aprov-actions">
           <button class="btn-aprov aprovar" onclick="setAprov('${p.id}','aprovado')">
@@ -1349,6 +1632,9 @@ function renderAprovador() {
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8a6 6 0 1 0 1.5-4M2 2v4h4"/></svg>Resetar
           </button>
         </div>
+        <button class="btn-aprov" style="margin-left:auto" onclick="toggleAgencyReply('${p.id}')">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 10a2 2 0 01-2 2H5l-3 3V4a2 2 0 012-2h8a2 2 0 012 2z"/></svg>Responder
+        </button>
       </div>
       <div class="comment-zone" id="czone-${p.id}">
         <div class="comment-label" id="clabel-${p.id}">Comentário</div>
@@ -1386,6 +1672,23 @@ function confirmComment(id) {
   approvals[id].comments.push({from:'voce', text:txt||'—', time:'Agora'});
   save(); closeCommentZone(id); updateStats(); renderAprovador();
   toast({ajuste:'Ajuste solicitado', reprovado:'Post reprovado'}[action] || 'Atualizado');
+}
+
+
+function toggleAgencyReply(id) {
+  const zone = document.getElementById('areply-' + id);
+  if (zone) zone.classList.toggle('open');
+}
+
+function sendAgencyReply(id) {
+  const txt = (document.getElementById('areplyTxt-' + id)||{}).value?.trim();
+  if (!txt) return;
+  if (!approvals[id]) approvals[id] = {status:'pendente', comments:[]};
+  if (!approvals[id].comments) approvals[id].comments = [];
+  const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  approvals[id].comments.push({from:'agencia', text: txt, time: now});
+  save(); renderAprovador();
+  toast('✓ Resposta enviada ao cliente');
 }
 
 function resetAprov(id) {
@@ -1595,6 +1898,16 @@ function initClientPortal(clientId) {
   switchSection('clienteportal');
 }
 
+
+function getPreviewUrl(url) {
+  if (!url) return null;
+  // Google Drive file: /file/d/ID/view → /file/d/ID/preview
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  // Google Drive folder or shared — just open
+  return null; // non-embeddable → show button only
+}
+
 function renderClientPortal(clientId) {
   const list = document.getElementById('clientPortalList');
   const posts = allPosts().filter(p => p.p === clientId);
@@ -1618,10 +1931,15 @@ function renderClientPortal(clientId) {
     const commentsHtml = aprov.comments && aprov.comments.length ?
       `<div class="comments-thread" style="padding:.625rem 0 0;">${aprov.comments.map(c => `
         <div class="comment-item">
-          <div class="comment-avatar ${c.from==='cliente'?'av-client':'av-you'}">${c.from==='cliente'?'C':'V'}</div>
-          <div class="comment-bubble"><div class="comment-who">${c.from==='cliente'?(PL[p.p]||'Cliente'):'Agência'} · ${c.time}</div>${c.text}</div>
+          <div class="comment-avatar ${c.from==='cliente'?'av-client':(c.from==='agencia'?'av-agency':'av-you')}">${c.from==='cliente'?'C':(c.from==='agencia'?'A':'V')}</div>
+          <div class="comment-bubble"><div class="comment-who">${c.from==='cliente'?(PL[p.p]||'Cliente'):(c.from==='agencia'?'Agência':'Você')} · ${c.time}</div>${c.text}</div>
         </div>`).join('')}
       </div>` : '';
+    const previewUrl = getPreviewUrl(p.files);
+    const artPreview = p.files ? (previewUrl
+      ? `<div class="art-preview-block"><iframe class="art-preview-frame" src="${previewUrl}" allowfullscreen></iframe><div class="art-preview-label"><a href="${p.files}" target="_blank" style="color:var(--muted)">↗ Abrir em nova aba</a></div></div>`
+      : `<a href="${p.files}" target="_blank" class="art-preview-btn-lg"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="14" height="14" rx="2"/><path d="M4 10l3-3 2 2 2-3 3 3"/><circle cx="5.5" cy="5.5" r="1"/></svg>Ver arte / arquivos</a>`)
+      : '';
 
     const typeColor = TYPE_COLORS[p.t] || '#666';
 
@@ -1636,7 +1954,7 @@ function renderClientPortal(clientId) {
             <rect x="23" y="23" width="13" height="13" rx="3" fill="${typeColor}"/>
           </svg>
           ${p.files ? `<a href="${p.files}" target="_blank" class="drive-preview-btn" style="margin-top:.5rem;font-size:.7rem;padding:.35rem .625rem;">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 10v3a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1h3M9 1h6v6M6 10l9-9"/></svg>Ver arquivos
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 10v3a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1h3M9 1h6v6M6 10l9-9"/></svg>Ver arte
           </a>` : '<span style="font-size:.7rem;opacity:.5;">Sem arquivos</span>'}
         </div>
         <div class="client-aprov-content">
@@ -1692,6 +2010,7 @@ function renderClientPortal(clientId) {
 }
 
 let cpCommentPending = {};
+let notes = {}; // notas internas por post id
 let cpFilter = 'all';
 
 function setCpFilter(filter, btn) {
@@ -1778,6 +2097,11 @@ renderClientes();
   }
 })();
 
+// Show daily summary (admin only)
+if (!new URLSearchParams(window.location.search).get('cliente')) {
+  setTimeout(showDailySummary, 600);
+}
+
 // ════════════════════════════════════════════
 // SYNC CROSS-TAB (cliente aprova → painel atualiza)
 // ════════════════════════════════════════════
@@ -1789,6 +2113,7 @@ window.addEventListener('storage', function(e) {
     approvals      = d.approvals  || {};
     extraPosts     = d.extraPosts || [];
     nextId         = d.nextId     || 100;
+    notes          = d.notes       || {};
     updateStats();
     buildCalendar();
     if (state.calView === 'list') buildList();
