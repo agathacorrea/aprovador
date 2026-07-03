@@ -586,33 +586,60 @@ body.client-mode .client-portal-header{display:block;}
 .cp-filter-bar .chip.active { background: var(--text); color: var(--inverse); border-color: var(--text); }
 
 
-/* ── Client stat cards ────────────────────────────── */
+/* ── Client dots (quiet luxury) ─────────────────── */
 .client-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: .625rem;
-  margin-bottom: .75rem;
+  padding: .375rem 0 1rem;
+  margin-bottom: .25rem;
 }
-.cstat-card {
+.cdot {
+  position: relative;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+  cursor: pointer;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: .75rem 1rem;
-  cursor: pointer;
-  transition: box-shadow .18s, border-color .18s;
-  border-left: 3px solid var(--border);
+  color: var(--muted);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, color .18s ease;
 }
-.cstat-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-.cstat-card.active { border-left-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb),.15); }
-.cstat-head { display:flex; align-items:center; gap:.4rem; margin-bottom:.4rem; }
-.cstat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.cstat-name { font-size:.8rem; font-weight:700; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.cstat-total { font-size:1.5rem; font-weight:800; line-height:1; margin-bottom:.25rem; color:var(--text); }
-.cstat-pills { display:flex; gap:.3rem; flex-wrap:wrap; }
-.cstat-pill { font-size:.65rem; font-weight:600; padding:.1rem .4rem; border-radius:var(--r-full); }
-.cstat-pill.ap { background:var(--success-hl); color:var(--success-txt); }
-.cstat-pill.pd { background:var(--gold-hl); color:var(--gold-txt); }
-.cstat-pill.pr { background:var(--surface-2); color:var(--muted); }
+.cdot:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); color: var(--text); }
+.cdot.active {
+  color: var(--inverse);
+  background: var(--cdot-color, var(--text));
+  border-color: var(--cdot-color, var(--text));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--cdot-color, var(--text)) 18%, transparent);
+}
+.cdot .cdot-pending {
+  position: absolute;
+  top: -2px; right: -2px;
+  min-width: 14px; height: 14px; padding: 0 3px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #fff;
+  font-size: .58rem; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--surface);
+}
+.cdot-all {
+  height: 38px; padding: 0 .875rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .72rem; font-weight: 600; letter-spacing: .02em;
+  display: inline-flex; align-items: center; gap: .4rem;
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background .18s;
+}
+.cdot-all:hover { color: var(--text); }
+.cdot-all.active { background: var(--text); color: var(--inverse); border-color: var(--text); }
+.cdot-sep { width: 1px; height: 24px; background: var(--divider); margin: 0 .25rem; }
+.cdot-meta { font-size: .72rem; color: var(--faint); margin-left: auto; font-variant-numeric: tabular-nums; }
 
 
 /* Agency reply zone in admin card */
@@ -938,6 +965,10 @@ document.addEventListener('DOMContentLoaded',()=>{
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M8 5v6M5 8h6"/></svg>
             <span class="tab-text">Novo Post</span>
           </button>
+          <button class="nav-tab" id="tabClientes" onclick="switchSection('clientes')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="6" r="3"/><path d="M2 15c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+            <span class="tab-text">Clientes</span>
+          </button>
         </div>
         <button class="icon-btn" id="themeToggle" title="Alternar tema">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1015,8 +1046,57 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="sec-clientes" class="section">
   <div class="container">
     <div class="clientes-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.5rem;">
+        <div>
+          <div style="font-size:1.1rem;font-weight:700;">Clientes</div>
+          <div style="font-size:.8125rem;color:var(--muted);">Gerencie e acompanhe cada cliente.</div>
+        </div>
+        <button class="btn-sm primary" onclick="openNewClientModal()" style="display:inline-flex;align-items:center;gap:.35rem;">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M8 5v6M5 8h6"/></svg>
+          Novo cliente
+        </button>
+      </div>
       <div id="urgencyBanners"></div>
       <div class="clientes-grid" id="clientesGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL NOVO CLIENTE ══════════ -->
+<div id="newClientBackdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)closeNewClientModal()">
+  <div style="background:var(--surface);border-radius:var(--r-xl);max-width:460px;width:100%;padding:1.5rem;box-shadow:var(--shadow-lg);border:1px solid var(--border);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <div style="font-size:1.05rem;font-weight:700;">Novo cliente</div>
+      <button class="icon-btn" onclick="closeNewClientModal()" title="Fechar">×</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.75rem;">
+      <div>
+        <label class="form-label">Nome*</label>
+        <input type="text" class="form-input" id="ncName" placeholder="Ex: Instituto Bem-Estar" maxlength="80">
+      </div>
+      <div>
+        <label class="form-label">Área / especialidade</label>
+        <input type="text" class="form-input" id="ncArea" placeholder="Ex: Estética & Bem-estar" maxlength="80">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div>
+          <label class="form-label">Iniciais (2 letras)</label>
+          <input type="text" class="form-input" id="ncIc" placeholder="IB" maxlength="3" style="text-transform:uppercase;">
+        </div>
+        <div>
+          <label class="form-label">Prazo do lote (dia)</label>
+          <input type="number" class="form-input" id="ncPrazo" min="1" max="31" value="25">
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Cor principal</label>
+        <input type="color" class="form-input" id="ncColor" value="#01696f" style="height:42px;padding:.25rem;">
+      </div>
+      <div id="ncError" style="display:none;color:var(--danger);font-size:.8125rem;"></div>
+      <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.25rem;">
+        <button class="btn-sm" onclick="closeNewClientModal()">Cancelar</button>
+        <button class="btn-sm primary" onclick="saveNewClient()">Adicionar cliente</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1340,12 +1420,18 @@ const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julh
 const DAY_NAMES_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const DAY_NAMES_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 
-const CLIENTS_META = {
+let CLIENTS_META = {
   adara:  {id:'adara',  name:'Instituto Adara',    area:'Centro de Saúde Integrada', prazo:20, color:'var(--primary)',  dot:'var(--primary)',  ic:'IA', icBg:'var(--primary-hl)',  icColor:'var(--primary-h)'},
   renato: {id:'renato', name:'Dr. Renato Andrade', area:'Nutrologia',                prazo:22, color:'var(--blue)',     dot:'var(--blue)',     ic:'DR', icBg:'var(--blue-hl)',     icColor:'var(--blue-txt)'},
   cesar:  {id:'cesar',  name:'Dr. César Prota',    area:'Ortopedia',                 prazo:25, color:'#8a3a2a',        dot:'#8a3a2a',         ic:'CP', icBg:'#fdf0ec',           icColor:'#8a3a2a'},
   emily:  {id:'emily',  name:'Emily Robadelli',    area:'Estética & Bem-estar',      prazo:28, color:'var(--purple)',  dot:'var(--purple)',   ic:'ER', icBg:'var(--purple-hl)',  icColor:'var(--purple-txt)'},
 };
+
+// Carrega clientes customizados salvos no navegador
+try {
+  const _custom = JSON.parse(localStorage.getItem('customClients') || '{}');
+  Object.assign(CLIENTS_META, _custom);
+} catch(e) { console.warn('Falha ao carregar clientes customizados', e); }
 
 const TL = {post:'Estático',carrossel:'Carrossel',video:'Vídeo',stories:'Stories',reels:'Reels'};
 const SL = {pending:'Falta iniciar', production:'Em produção', review:'Aguardando aprovação', approved:'Aprovado', done:'Programado'};
@@ -1439,7 +1525,7 @@ function switchSection(s) {
   document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById('sec-' + s).classList.add('active');
-  const map = {calendario:'tabCal', novo:'tabNovo', clienteportal:'tabCal'};
+  const map = {calendario:'tabCal', novo:'tabNovo', clientes:'tabClientes', clienteportal:'tabCal'};
   const tab = document.getElementById(map[s]);
   if (tab) tab.classList.add('active');
   if (s === 'aprovador') renderAprovador();
@@ -1458,30 +1544,32 @@ function updateStats() {
   const d   = tasks.filter(t => state.statuses[t.id] === 'done').length;
   const pendingAprov = tasks.filter(t => !approvals[t.id] || approvals[t.id].status === 'pendente').length;
 
-  // Per-client stat cards
+  // Client dots — minimalista (iniciais apenas)
   const grid = document.getElementById('clientStatsGrid');
   if (grid) {
-    const CLIENT_COLORS = {adara:'var(--primary)', emily:'var(--purple)', renato:'var(--blue)', cesar:'#8a3a2a'};
-    grid.innerHTML = Object.values(CLIENTS_META).map(c => {
+    const clients = Object.values(CLIENTS_META);
+    const allActive = state.pf === 'all' || !state.pf;
+    const totalPend = tasks.filter(t => !approvals[t.id] || approvals[t.id].status === 'pendente').length;
+
+    const allBtn = `<button type="button" class="cdot-all${allActive?' active':''}" onclick="filterByClient('all')" title="Todos os clientes">
+      Todos <span style="opacity:.6">·</span> ${tasks.length}
+    </button>`;
+
+    const dots = clients.map(c => {
       const cTasks = tasks.filter(t => t.p === c.id);
-      const cDone  = cTasks.filter(t => state.statuses[t.id] === 'done').length;
-      const cAp    = cTasks.filter(t => approvals[t.id] && approvals[t.id].status === 'aprovado').length;
       const cPd    = cTasks.filter(t => !approvals[t.id] || approvals[t.id].status === 'pendente').length;
       const col    = c.color || 'var(--muted)';
       const isAct  = state.pf === c.id;
-      const pct    = cTasks.length ? Math.round((cDone / cTasks.length) * 100) : 0;
-      return `<div class="cstat-card${isAct?' active':''}" style="border-top-color:${col};--accent:${col}" onclick="filterByClient('${c.id}')">
-        <div class="progress-client-row">
-          <div class="progress-client-name"><span class="cstat-dot" style="background:${col}"></span>${c.name.replace('Instituto ','').replace('Dr. ','')}</div>
-          <div class="progress-client-track"><div class="progress-client-fill" style="width:${pct}%;background:${col}"></div></div>
-          <div class="progress-client-num">${cDone}/${cTasks.length}</div>
-        </div>
-        <div class="cstat-pills">
-          <span class="cstat-pill ap">${cAp} aprovados</span>
-          <span class="cstat-pill pd">${cPd} pendentes</span>
-        </div>
-      </div>`;
+      const pendBadge = cPd > 0 ? `<span class="cdot-pending">${cPd}</span>` : '';
+      return `<button type="button" class="cdot${isAct?' active':''}" style="--cdot-color:${col}"
+        onclick="filterByClient('${c.id}')"
+        title="${c.name} — ${cTasks.length} posts, ${cPd} pendentes">
+        ${c.ic}${pendBadge}
+      </button>`;
     }).join('');
+
+    grid.innerHTML = allBtn + '<span class="cdot-sep"></span>' + dots
+      + `<span class="cdot-meta">${totalPend} aguardando aprovação</span>`;
   }
 
   const badgeEl = document.getElementById('badgePendente');
@@ -1635,7 +1723,8 @@ document.getElementById('btnNextMonth').addEventListener('click', () => {
 // ════════════════════════════════════════════
 // LIST VIEW
 // ════════════════════════════════════════════
-const PL = {adara:'Instituto Adara', emily:'Emily', renato:'Dr. Renato', cesar:'Dr. César'};
+let PL = {adara:'Instituto Adara', emily:'Emily', renato:'Dr. Renato', cesar:'Dr. César'};
+Object.values(CLIENTS_META).forEach(c => { if (!(c.id in PL)) PL[c.id] = c.name; });
 
 // ════════════════════════════════════════════
 // MODAL
@@ -2646,8 +2735,78 @@ function clientAprov(id, status) {
 // checkClientPortal is called after init (see below)
 
 // ════════════════════════════════════════════
+// GESTÃO DE CLIENTES (novo cliente via modal)
+// ════════════════════════════════════════════
+function openNewClientModal() {
+  document.getElementById('newClientBackdrop').style.display = 'flex';
+  document.getElementById('ncError').style.display = 'none';
+  ['ncName','ncArea','ncIc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ncPrazo').value = 25;
+  document.getElementById('ncColor').value = '#01696f';
+  setTimeout(() => document.getElementById('ncName').focus(), 50);
+}
+function closeNewClientModal() {
+  document.getElementById('newClientBackdrop').style.display = 'none';
+}
+function _slugify(s) {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'').slice(0,20) || 'cliente';
+}
+function _hexToRgba(hex, a) {
+  const h = hex.replace('#',''); const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function saveNewClient() {
+  const name  = document.getElementById('ncName').value.trim();
+  const area  = document.getElementById('ncArea').value.trim() || '—';
+  const icRaw = document.getElementById('ncIc').value.trim().toUpperCase();
+  const prazo = Math.max(1, Math.min(31, parseInt(document.getElementById('ncPrazo').value,10) || 25));
+  const color = document.getElementById('ncColor').value || '#01696f';
+  const err   = document.getElementById('ncError');
+  if (!name) { err.textContent = 'Informe o nome do cliente.'; err.style.display='block'; return; }
+  let id = _slugify(name);
+  let base = id, n = 2;
+  while (CLIENTS_META[id]) { id = base + n; n++; }
+  const ic = (icRaw || name.split(/\s+/).map(w=>w[0]).join('').slice(0,2)).toUpperCase();
+  const newClient = {
+    id, name, area, prazo,
+    color, dot: color,
+    ic, icBg: _hexToRgba(color, 0.14), icColor: color
+  };
+  CLIENTS_META[id] = newClient;
+  PL[id] = name;
+  // persistir
+  try {
+    const custom = JSON.parse(localStorage.getItem('customClients') || '{}');
+    custom[id] = newClient;
+    localStorage.setItem('customClients', JSON.stringify(custom));
+  } catch(e) { console.warn(e); }
+  refreshClientSelectors();
+  renderClientes();
+  updateStats();
+  closeNewClientModal();
+}
+function refreshClientSelectors() {
+  ['fCliente','qpCliente'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    const existing = new Set(Array.from(sel.options).map(o => o.value));
+    Object.values(CLIENTS_META).forEach(c => {
+      if (!existing.has(c.id)) {
+        const opt = document.createElement('option');
+        opt.value = c.id; opt.textContent = c.name;
+        sel.appendChild(opt);
+      }
+    });
+    sel.value = current;
+  });
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
+refreshClientSelectors();
 buildCalendar();
 updateStats();
 renderClientes();
@@ -2770,7 +2929,7 @@ window.addEventListener('storage', function(e) {
 
     // Notifica se aprovações mudaram
     if (JSON.stringify(approvals) !== prevApprovals) {
-      toast('🔔 Nova resposta do cliente!');
+      toast('🔔 Atualização!');
     }
   }, e => console.warn('[Firebase] listener error', e));
 
