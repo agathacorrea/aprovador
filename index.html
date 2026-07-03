@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calendário Editorial | Planejamento de Conteúdo</title>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════
    TOKENS
@@ -919,6 +922,107 @@ body.client-mode .client-portal-header{display:block;}
 .form-hint-hashtag{font-size:.75rem;color:var(--faint);margin-top:.25rem;}
 
 
+
+/* ══════════════════════════════════════════
+   REDESIGN LAYER v2 (non-destructive overlay)
+   ══════════════════════════════════════════ */
+:root{
+  --accent:#FF6B4A;
+  --accent-h:#e85a3b;
+  --accent-hl:#ffe1d8;
+  --font-display:'Space Grotesk','Satoshi',-apple-system,sans-serif;
+  --font-body:'Inter','Satoshi',-apple-system,sans-serif;
+  --shadow-glow:0 8px 32px -8px rgba(255,107,74,.35);
+  --ring-track:#eceae4;
+}
+[data-theme="dark"]{
+  --accent:#FF8A6E;
+  --accent-h:#ff6b4a;
+  --accent-hl:#3d221a;
+  --ring-track:#2a2825;
+}
+body{font-family:var(--font-body);}
+h1,h2,h3,h4,.client-name,.client-card-title,.today-card-title,.cp-title,.form-section-title{
+  font-family:var(--font-display);letter-spacing:-.01em;
+}
+
+/* Toast refresh */
+.toast{
+  bottom:1.5rem;left:auto;right:1.5rem;transform:translateY(120%);
+  background:var(--surface);color:var(--text);
+  border:1px solid var(--border);border-left:3px solid var(--accent);
+  padding:.75rem 1.1rem;border-radius:var(--r-lg);
+  box-shadow:var(--shadow-lg);font-weight:500;
+  white-space:normal;max-width:320px;
+}
+.toast.show{transform:translateY(0);}
+@media(max-width:520px){.toast{left:1rem;right:1rem;max-width:none;}}
+
+/* Client cards enhancements */
+.client-card{transition:box-shadow .22s ease,transform .22s ease,border-color .22s ease;
+  animation:cardIn .5s cubic-bezier(.2,.7,.2,1) both;}
+.client-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.clientes-grid > .client-card:nth-child(1){animation-delay:.02s}
+.clientes-grid > .client-card:nth-child(2){animation-delay:.08s}
+.clientes-grid > .client-card:nth-child(3){animation-delay:.14s}
+.clientes-grid > .client-card:nth-child(4){animation-delay:.20s}
+.clientes-grid > .client-card:nth-child(5){animation-delay:.26s}
+.clientes-grid > .client-card:nth-child(6){animation-delay:.32s}
+.clientes-grid > .client-card:nth-child(n+7){animation-delay:.38s}
+
+@keyframes cardIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes ringDraw{from{stroke-dashoffset:var(--ring-full);}to{stroke-dashoffset:var(--ring-off);}}
+
+/* Progress ring on client cards */
+.client-card-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.4rem;}
+.client-ring{position:relative;width:64px;height:64px;flex-shrink:0;}
+.client-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.client-ring .ring-track{fill:none;stroke:var(--ring-track);stroke-width:6;}
+.client-ring .ring-value{fill:none;stroke-width:6;stroke-linecap:round;
+  stroke-dasharray:var(--ring-full);
+  animation:ringDraw .9s cubic-bezier(.4,.0,.2,1) both;}
+.client-ring .ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;font-family:var(--font-display);font-weight:700;line-height:1;}
+.client-ring .ring-pct{font-size:.95rem;color:var(--text);}
+.client-ring .ring-sub{font-size:.55rem;color:var(--muted);font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+
+/* Client card action row: edit / delete inline */
+.client-card-manage{
+  display:flex;gap:.35rem;
+}
+.client-card-manage button{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  width:30px;height:30px;border-radius:var(--r-md);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .16s;padding:0;
+}
+.client-card-manage button:hover{color:var(--text);border-color:var(--text);background:var(--offset);}
+.client-card-manage button.danger-hover:hover{color:var(--danger);border-color:var(--danger);background:var(--danger-hl);}
+.client-card-manage button:disabled{opacity:.35;cursor:not-allowed;}
+.client-card-manage button:disabled:hover{background:transparent;border-color:var(--border);color:var(--muted);}
+
+/* Primary CTA accent variant */
+.btn-sm.accent,.btn-primary.accent{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-sm.accent:hover,.btn-primary.accent:hover{background:var(--accent-h);border-color:var(--accent-h);box-shadow:var(--shadow-glow);}
+
+/* Empty state */
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:3rem 1rem;
+  animation:fadeIn .4s ease both;
+}
+.empty-state svg{margin:0 auto .75rem;display:block;opacity:.85;}
+.empty-state h3{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:.3rem;}
+.empty-state p{font-size:.875rem;color:var(--muted);max-width:340px;margin:0 auto 1rem;}
+
+/* Delete-confirm modal */
+.confirm-modal-inner{
+  background:var(--surface);border-radius:var(--r-xl);
+  max-width:460px;width:100%;padding:1.5rem;
+  box-shadow:var(--shadow-lg);border:1px solid var(--border);
+}
+.confirm-modal-inner .form-select,.confirm-modal-inner .form-input{margin-top:.35rem;}
+
 </style>
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -1066,7 +1170,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="newClientBackdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)closeNewClientModal()">
   <div style="background:var(--surface);border-radius:var(--r-xl);max-width:460px;width:100%;padding:1.5rem;box-shadow:var(--shadow-lg);border:1px solid var(--border);">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <div style="font-size:1.05rem;font-weight:700;">Novo cliente</div>
+      <div id="ncTitle" style="font-size:1.05rem;font-weight:700;">Novo cliente</div>
       <button class="icon-btn" onclick="closeNewClientModal()" title="Fechar">×</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:.75rem;">
@@ -1095,7 +1199,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <div id="ncError" style="display:none;color:var(--danger);font-size:.8125rem;"></div>
       <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.25rem;">
         <button class="btn-sm" onclick="closeNewClientModal()">Cancelar</button>
-        <button class="btn-sm primary" onclick="saveNewClient()">Adicionar cliente</button>
+        <button class="btn-sm primary accent" id="ncSaveBtn" onclick="saveClient()">Adicionar cliente</button>
       </div>
     </div>
   </div>
@@ -1432,6 +1536,12 @@ try {
   const _custom = JSON.parse(localStorage.getItem('customClients') || '{}');
   Object.assign(CLIENTS_META, _custom);
 } catch(e) { console.warn('Falha ao carregar clientes customizados', e); }
+// Aplica overrides de cliente (reatribuições após exclusão)
+try {
+  const _ov = JSON.parse(localStorage.getItem('aprovai-v1') || '{}').clientOverrides || {};
+  // será reaplicado abaixo após TASKS existirem
+  window.__clientOverridesPending = _ov;
+} catch(e) {}
 
 const TL = {post:'Estático',carrossel:'Carrossel',video:'Vídeo',stories:'Stories',reels:'Reels'};
 const SL = {pending:'Falta iniciar', production:'Em produção', review:'Aguardando aprovação', approved:'Aprovado', done:'Programado'};
@@ -1500,10 +1610,19 @@ try {
   }
 } catch(e) {}
 
+// Reaplica overrides de cliente salvos
+try {
+  const _ov = window.__clientOverridesPending || {};
+  Object.keys(_ov).forEach(tid => {
+    const t = TASKS.find(x => x.id === tid);
+    if (t && CLIENTS_META[_ov[tid]]) t.p = _ov[tid];
+  });
+  if (!state.clientOverrides) state.clientOverrides = _ov;
+} catch(e) {}
 TASKS.forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'; });
 
 function save() {
-  try { localStorage.setItem('aprovai-v1', JSON.stringify({statuses:state.statuses, deletedIds:state.deletedIds||[], approvals, extraPosts, nextId, notes})); } catch(e) {}
+  try { localStorage.setItem('aprovai-v1', JSON.stringify({statuses:state.statuses, deletedIds:state.deletedIds||[], approvals, extraPosts, nextId, notes, clientOverrides:state.clientOverrides||{}})); } catch(e) {}
 }
 
 function allPosts() { const del = state.deletedIds || []; return [...TASKS.filter(t => !del.includes(t.id)), ...extraPosts]; }
@@ -2367,7 +2486,27 @@ function renderClientes() {
   const today = TODAY_DAY;
   let urgHtml = '';
 
-  let cardsHtml = Object.values(CLIENTS_META).map(c => {
+  const clientsArr = Object.values(CLIENTS_META);
+
+  if (clientsArr.length === 0) {
+    banners.innerHTML = '';
+    grid.innerHTML = `<div class="empty-state">
+      <svg width="120" height="90" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="18" width="96" height="64" rx="10" fill="var(--offset)" stroke="var(--border)" stroke-width="1.5"/>
+        <circle cx="34" cy="42" r="9" fill="var(--accent-hl)" stroke="var(--accent)" stroke-width="1.5"/>
+        <rect x="52" y="36" width="42" height="4" rx="2" fill="var(--dynamic)"/>
+        <rect x="52" y="46" width="30" height="4" rx="2" fill="var(--dynamic)"/>
+        <rect x="24" y="62" width="72" height="4" rx="2" fill="var(--dynamic)"/>
+        <path d="M96 12 l4 4 l-4 4 l-4 -4 z" fill="var(--accent)"/>
+      </svg>
+      <h3>Nenhum cliente cadastrado</h3>
+      <p>Adicione seu primeiro cliente para começar a organizar os posts e aprovações.</p>
+      <button class="btn-sm primary accent" onclick="openNewClientModal()">+ Novo cliente</button>
+    </div>`;
+    return;
+  }
+
+  let cardsHtml = clientsArr.map(c => {
     const posts = allPosts().filter(p => p.p === c.id);
     const total = posts.length;
     const done = posts.filter(p => state.statuses[p.id] === 'done').length;
@@ -2390,11 +2529,31 @@ function renderClientes() {
     const doneClass = done === total && total > 0 ? 'ok' : done > 0 ? 'warn' : '';
     const aprovClass = aprovados === total && total > 0 ? 'ok' : pendAprov > 0 ? 'warn' : '';
 
+    // Progress ring: % of aprovados sobre total (fallback vazio se sem posts)
+    const pct = total ? Math.round((aprovados/total)*100) : 0;
+    const R = 26, C = 2*Math.PI*R;
+    const off = C - (C * pct/100);
+    const ringColor = pct === 100 ? 'var(--success)' : (pct >= 50 ? c.color : 'var(--muted)');
+    const isProtected = PROTECTED_CLIENTS.has(c.id);
+
     return `<div class="client-card" style="border-top:4px solid ${c.color}">
       <div class="client-card-top">
-        <div class="client-ic${c.id === 'cesar' ? ' ic-cesar' : ''}" style="background:${c.icBg};color:${c.icColor};border:2.5px solid ${c.color}22">${c.ic}</div>
-        <div class="client-name">${c.name}</div>
-        <div class="client-area">${c.area}</div>
+        <div class="client-card-head-row">
+          <div style="min-width:0;flex:1;">
+            <div class="client-ic${c.id === 'cesar' ? ' ic-cesar' : ''}" style="background:${c.icBg};color:${c.icColor};border:2.5px solid ${c.color}22">${c.ic}</div>
+            <div class="client-name" style="margin-top:.5rem;">${c.name}</div>
+            <div class="client-area">${c.area}</div>
+          </div>
+          <div class="client-ring" title="${aprovados} de ${total} aprovados"
+               style="--ring-full:${C.toFixed(2)};--ring-off:${off.toFixed(2)};">
+            <svg viewBox="0 0 64 64">
+              <circle class="ring-track" cx="32" cy="32" r="${R}"/>
+              <circle class="ring-value" cx="32" cy="32" r="${R}"
+                      style="stroke:${ringColor};stroke-dasharray:${C.toFixed(2)};stroke-dashoffset:${off.toFixed(2)};"/>
+            </svg>
+            <div class="ring-label"><span class="ring-pct">${pct}%</span><span class="ring-sub">aprov.</span></div>
+          </div>
+        </div>
         <div class="client-stats">
           <span class="cstat ${doneClass}">${done}/${total} prontos</span>
           <span class="cstat ${aprovClass}">${pendAprov} aguard. aprovação</span>
@@ -2402,12 +2561,20 @@ function renderClientes() {
         </div>
         <div class="client-prazo">Prazo do lote: <strong>dia ${c.prazo}</strong></div>
       </div>
-      <div class="client-card-bot">
-        <button class="btn-sm primary" onclick="filterAndGoTo('${c.id}')">Ver no calendário</button>
+      <div class="client-card-bot" style="flex-wrap:wrap;">
+        <button class="btn-sm primary accent" onclick="filterAndGoTo('${c.id}')">Ver no calendário</button>
         <button class="btn-sm" onclick="filterAprovAndGoTo('${c.id}')">Aprovações</button>
         <button class="copy-link-btn" onclick="copyClientLink('${c.id}', this)" title="Copiar link do portal do cliente">
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="9" height="9" rx="2"/><path d="M3 11H2a1 1 0 01-1-1V2a1 1 0 011-1h8a1 1 0 011 1v1"/></svg>Link do cliente
         </button>
+        <div class="client-card-manage" style="margin-left:auto;">
+          <button onclick="openEditClientModal('${c.id}')" title="Editar cliente" aria-label="Editar cliente">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11.5 2.5l2 2L5 13H3v-2z"/></svg>
+          </button>
+          <button class="danger-hover" onclick="openDeleteClientModal('${c.id}')" ${isProtected ? 'disabled title="Cliente padrão — não pode ser excluído"' : 'title="Excluir cliente"'} aria-label="Excluir cliente">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M6 4V2.5h4V4M4.5 4l.5 9a1 1 0 001 1h4a1 1 0 001-1l.5-9"/></svg>
+          </button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2737,37 +2904,92 @@ function clientAprov(id, status) {
 // ════════════════════════════════════════════
 // GESTÃO DE CLIENTES (novo cliente via modal)
 // ════════════════════════════════════════════
+// Clientes originais que não podem ser excluídos (protegem os posts de exemplo)
+const PROTECTED_CLIENTS = new Set(['adara','renato','cesar','emily']);
+let _editingClientId = null;
+
 function openNewClientModal() {
+  _editingClientId = null;
+  document.getElementById('ncTitle').textContent = 'Novo cliente';
+  document.getElementById('ncSaveBtn').textContent = 'Adicionar cliente';
   document.getElementById('newClientBackdrop').style.display = 'flex';
   document.getElementById('ncError').style.display = 'none';
   ['ncName','ncArea','ncIc'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('ncPrazo').value = 25;
-  document.getElementById('ncColor').value = '#01696f';
+  document.getElementById('ncColor').value = '#FF6B4A';
+  setTimeout(() => document.getElementById('ncName').focus(), 50);
+}
+function openEditClientModal(id) {
+  const c = CLIENTS_META[id];
+  if (!c) return;
+  _editingClientId = id;
+  document.getElementById('ncTitle').textContent = 'Editar cliente';
+  document.getElementById('ncSaveBtn').textContent = 'Salvar alterações';
+  document.getElementById('newClientBackdrop').style.display = 'flex';
+  document.getElementById('ncError').style.display = 'none';
+  document.getElementById('ncName').value = c.name || '';
+  document.getElementById('ncArea').value = (c.area && c.area !== '—') ? c.area : '';
+  document.getElementById('ncIc').value = c.ic || '';
+  document.getElementById('ncPrazo').value = c.prazo || 25;
+  // Cor: se estiver em formato var(--...), cai no default
+  const colorVal = (c.color && c.color.startsWith('#')) ? c.color : '#FF6B4A';
+  document.getElementById('ncColor').value = colorVal;
   setTimeout(() => document.getElementById('ncName').focus(), 50);
 }
 function closeNewClientModal() {
   document.getElementById('newClientBackdrop').style.display = 'none';
+  _editingClientId = null;
 }
 function _slugify(s) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^a-z0-9]+/g,'').slice(0,20) || 'cliente';
 }
 function _hexToRgba(hex, a) {
+  if (!hex || !hex.startsWith('#')) return `rgba(255,107,74,${a})`;
   const h = hex.replace('#',''); const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
   return `rgba(${r},${g},${b},${a})`;
 }
-function saveNewClient() {
+function _persistCustomClients() {
+  try {
+    // Salva TODOS os customizados + edições dos originais que o usuário fez
+    const custom = {};
+    Object.values(CLIENTS_META).forEach(c => { custom[c.id] = c; });
+    localStorage.setItem('customClients', JSON.stringify(custom));
+  } catch(e) { console.warn(e); }
+}
+function saveClient() {
   const name  = document.getElementById('ncName').value.trim();
   const area  = document.getElementById('ncArea').value.trim() || '—';
   const icRaw = document.getElementById('ncIc').value.trim().toUpperCase();
   const prazo = Math.max(1, Math.min(31, parseInt(document.getElementById('ncPrazo').value,10) || 25));
-  const color = document.getElementById('ncColor').value || '#01696f';
+  const color = document.getElementById('ncColor').value || '#FF6B4A';
   const err   = document.getElementById('ncError');
   if (!name) { err.textContent = 'Informe o nome do cliente.'; err.style.display='block'; return; }
+
+  const ic = (icRaw || name.split(/\s+/).map(w=>w[0]).join('').slice(0,2)).toUpperCase();
+
+  if (_editingClientId) {
+    const existing = CLIENTS_META[_editingClientId];
+    const updated = {
+      ...existing,
+      name, area, prazo,
+      color, dot: color,
+      ic, icBg: _hexToRgba(color, 0.14), icColor: color
+    };
+    CLIENTS_META[_editingClientId] = updated;
+    PL[_editingClientId] = name;
+    _persistCustomClients();
+    refreshClientSelectors();
+    renderClientes();
+    updateStats();
+    closeNewClientModal();
+    toast('Cliente atualizado.');
+    return;
+  }
+
   let id = _slugify(name);
   let base = id, n = 2;
   while (CLIENTS_META[id]) { id = base + n; n++; }
-  const ic = (icRaw || name.split(/\s+/).map(w=>w[0]).join('').slice(0,2)).toUpperCase();
   const newClient = {
     id, name, area, prazo,
     color, dot: color,
@@ -2775,16 +2997,102 @@ function saveNewClient() {
   };
   CLIENTS_META[id] = newClient;
   PL[id] = name;
-  // persistir
-  try {
-    const custom = JSON.parse(localStorage.getItem('customClients') || '{}');
-    custom[id] = newClient;
-    localStorage.setItem('customClients', JSON.stringify(custom));
-  } catch(e) { console.warn(e); }
+  _persistCustomClients();
   refreshClientSelectors();
   renderClientes();
   updateStats();
   closeNewClientModal();
+  toast('Cliente adicionado.');
+}
+
+// ─── EXCLUIR CLIENTE ───────────────────────────
+let _deletingClientId = null;
+function openDeleteClientModal(id) {
+  if (PROTECTED_CLIENTS.has(id)) { toast('Este é um cliente padrão e não pode ser excluído.'); return; }
+  const c = CLIENTS_META[id];
+  if (!c) return;
+  _deletingClientId = id;
+  const affected = allPosts().filter(p => p.p === id);
+  const otherClients = Object.values(CLIENTS_META).filter(x => x.id !== id);
+  const optionsHtml = otherClients.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+
+  let bd = document.getElementById('deleteClientBackdrop');
+  if (!bd) {
+    bd = document.createElement('div');
+    bd.id = 'deleteClientBackdrop';
+    bd.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;padding:1rem;';
+    bd.onclick = (e) => { if (e.target === bd) closeDeleteClientModal(); };
+    document.body.appendChild(bd);
+  }
+  bd.innerHTML = `<div class="confirm-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+      <div style="font-size:1.05rem;font-weight:700;font-family:var(--font-display);">Excluir cliente</div>
+      <button class="icon-btn" onclick="closeDeleteClientModal()">×</button>
+    </div>
+    <p style="font-size:.9rem;color:var(--text);margin-bottom:.75rem;">
+      Excluir <strong>${c.name}</strong>? Esta ação não pode ser desfeita.
+    </p>
+    ${affected.length ? `
+      <div style="background:var(--offset);border:1px solid var(--border);border-radius:var(--r-md);padding:.7rem .8rem;margin-bottom:.9rem;font-size:.85rem;">
+        <strong style="color:var(--accent);">${affected.length} post(s)</strong> vinculados a este cliente serão afetados.
+      </div>
+      <label class="form-label">O que fazer com os posts?</label>
+      <select class="form-select" id="delReassignSel" style="margin-bottom:.9rem;">
+        <option value="__delete__">Excluir os posts junto</option>
+        ${otherClients.length ? `<optgroup label="Reatribuir para:">${optionsHtml}</optgroup>` : ''}
+      </select>
+    ` : `<p style="font-size:.85rem;color:var(--muted);margin-bottom:.9rem;">Nenhum post vinculado.</p>`}
+    <div id="delClientError" style="display:none;color:var(--danger);font-size:.8125rem;margin-bottom:.5rem;"></div>
+    <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+      <button class="btn-sm" onclick="closeDeleteClientModal()">Cancelar</button>
+      <button class="btn-sm" style="background:var(--danger);color:#fff;border-color:var(--danger);" onclick="confirmDeleteClient()">Excluir cliente</button>
+    </div>
+  </div>`;
+  bd.style.display = 'flex';
+}
+function closeDeleteClientModal() {
+  const bd = document.getElementById('deleteClientBackdrop');
+  if (bd) bd.style.display = 'none';
+  _deletingClientId = null;
+}
+function confirmDeleteClient() {
+  const id = _deletingClientId;
+  if (!id) return;
+  const sel = document.getElementById('delReassignSel');
+  const affected = allPosts().filter(p => p.p === id);
+  const choice = sel ? sel.value : '__delete__';
+
+  if (affected.length && choice !== '__delete__') {
+    // Reatribui: posts em TASKS (base) e extraPosts
+    extraPosts.forEach(p => { if (p.p === id) p.p = choice; });
+    // Posts base não podem ter p alterado permanentemente sem quebrar recarga.
+    // Salvamos overrides em state.clientOverrides
+    if (!state.clientOverrides) state.clientOverrides = {};
+    TASKS.forEach(t => { if (t.p === id) { state.clientOverrides[t.id] = choice; t.p = choice; } });
+  } else if (affected.length) {
+    // Exclui os posts
+    if (!state.deletedIds) state.deletedIds = [];
+    affected.forEach(p => { if (!state.deletedIds.includes(p.id)) state.deletedIds.push(p.id); });
+    extraPosts = extraPosts.filter(p => p.p !== id);
+  }
+
+  delete CLIENTS_META[id];
+  delete PL[id];
+  _persistCustomClients();
+  save();
+
+  // Remove das selects
+  ['fCliente','qpCliente'].forEach(selId => {
+    const s = document.getElementById(selId);
+    if (!s) return;
+    Array.from(s.options).forEach(o => { if (o.value === id) o.remove(); });
+  });
+
+  closeDeleteClientModal();
+  renderClientes();
+  buildCalendar();
+  updateStats();
+  toast('Cliente excluído.');
 }
 function refreshClientSelectors() {
   ['fCliente','qpCliente'].forEach(id => {
