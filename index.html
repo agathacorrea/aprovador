@@ -1525,12 +1525,13 @@ const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julh
 const DAY_NAMES_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const DAY_NAMES_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 
-let CLIENTS_META = {
+const DEFAULT_CLIENTS_META = {
   adara:  {id:'adara',  name:'Instituto Adara',    area:'Centro de Saúde Integrada', prazo:20, color:'var(--primary)',  dot:'var(--primary)',  ic:'IA', icBg:'var(--primary-hl)',  icColor:'var(--primary-h)'},
   renato: {id:'renato', name:'Dr. Renato Andrade', area:'Nutrologia',                prazo:22, color:'var(--blue)',     dot:'var(--blue)',     ic:'DR', icBg:'var(--blue-hl)',     icColor:'var(--blue-txt)'},
   cesar:  {id:'cesar',  name:'Dr. César Prota',    area:'Ortopedia',                 prazo:25, color:'#8a3a2a',        dot:'#8a3a2a',         ic:'CP', icBg:'#fdf0ec',           icColor:'#8a3a2a'},
   emily:  {id:'emily',  name:'Emily Robadelli',    area:'Estética & Bem-estar',      prazo:28, color:'var(--purple)',  dot:'var(--purple)',   ic:'ER', icBg:'var(--purple-hl)',  icColor:'var(--purple-txt)'},
 };
+let CLIENTS_META = Object.assign({}, DEFAULT_CLIENTS_META);
 
 // Carrega clientes customizados salvos no navegador
 try {
@@ -1624,6 +1625,7 @@ TASKS.forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'
 
 function save() {
   try { localStorage.setItem('aprovai-v1', JSON.stringify({statuses:state.statuses, deletedIds:state.deletedIds||[], approvals, extraPosts, nextId, notes, clientOverrides:state.clientOverrides||{}})); } catch(e) {}
+  _persistCustomClients();
 }
 
 function allPosts() { const del = state.deletedIds || []; return [...TASKS.filter(t => !del.includes(t.id)), ...extraPosts]; }
@@ -2979,7 +2981,7 @@ function saveClient() {
     };
     CLIENTS_META[_editingClientId] = updated;
     PL[_editingClientId] = name;
-    _persistCustomClients();
+    save();
     refreshClientSelectors();
     renderClientes();
     updateStats();
@@ -2998,7 +3000,7 @@ function saveClient() {
   };
   CLIENTS_META[id] = newClient;
   PL[id] = name;
-  _persistCustomClients();
+  save();
   refreshClientSelectors();
   renderClientes();
   updateStats();
@@ -3207,12 +3209,17 @@ window.addEventListener('storage', function(e) {
       _origSave();
       if (!DOC_REF) return;
       _saving = true;
+      let _customClients = {};
+      try { _customClients = JSON.parse(localStorage.getItem('customClients') || '{}'); } catch(e) {}
       const data = {
-        statuses:   state.statuses,
-        deletedIds: state.deletedIds || [],
-        approvals:  approvals,
-        extraPosts: extraPosts,
-        nextId:     nextId
+        statuses:       state.statuses,
+        deletedIds:     state.deletedIds || [],
+        approvals:      approvals,
+        extraPosts:     extraPosts,
+        nextId:         nextId,
+        notes:          notes,
+        clientOverrides: state.clientOverrides || {},
+        customClients:  _customClients
       };
       DOC_REF.set(data)
         .then(() => { _saving = false; })
@@ -3239,6 +3246,25 @@ window.addEventListener('storage', function(e) {
       approvals        = d.approvals  || {};
       extraPosts       = d.extraPosts || [];
       nextId           = d.nextId     || 100;
+      notes            = d.notes      || {};
+      state.clientOverrides = d.clientOverrides || {};
+
+      // Reaplica reatribuições de cliente nos posts base
+      Object.keys(state.clientOverrides).forEach(tid => {
+        const t = TASKS.find(x => x.id === tid);
+        if (t && (DEFAULT_CLIENTS_META[state.clientOverrides[tid]] || (d.customClients && d.customClients[state.clientOverrides[tid]]))) {
+          t.p = state.clientOverrides[tid];
+        }
+      });
+
+      // Reconstrói CLIENTS_META a partir dos padrões + customizados remotos
+      // (evita que um cliente excluído em outro dispositivo continue aparecendo aqui)
+      CLIENTS_META = Object.assign({}, DEFAULT_CLIENTS_META, d.customClients || {});
+      Object.keys(PL).forEach(k => { if (!CLIENTS_META[k]) delete PL[k]; });
+      Object.values(CLIENTS_META).forEach(c => { PL[c.id] = c.name; });
+      try { localStorage.setItem('customClients', JSON.stringify(d.customClients || {})); } catch(e) {}
+      refreshClientSelectors();
+      renderClientes();
 
       allPosts().forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'; });
 
