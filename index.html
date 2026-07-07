@@ -1027,6 +1027,7 @@ h1,h2,h3,h4,.client-name,.client-card-title,.today-card-title,.cp-title,.form-se
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <!-- FIX: tooltip listener separado (estava incorretamente dentro do script com src, onde é ignorado) -->
   <script>
 document.addEventListener('DOMContentLoaded',()=>{
@@ -3170,78 +3171,101 @@ window.addEventListener('storage', function(e) {
   };
 
   let DOC_REF = null;
-  let _saving  = false;
+  let _saving = false;
+  let fbApp, db, auth;
 
   try {
-    const fbApp = firebase.initializeApp(FIREBASE_CONFIG);
-    const db    = firebase.firestore(fbApp);
-    DOC_REF     = db.collection('aprovai').doc('painel');
+    fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+    db    = firebase.firestore(fbApp);
+    auth  = firebase.auth(fbApp);
   } catch(e) {
-    console.warn('[Firebase] init error — usando só localStorage', e);
-    return; // app continua normalmente sem Firebase
+    console.error('[Firebase] init error — usando só localStorage', e);
+    try { toast('❌ Firebase init: ' + (e.code || e.message)); } catch(_){}
+    return;
   }
 
-  // Sobrescreve save() para gravar no Firestore também
-  const _origSave = save;
-  window.save = function() {
-    _origSave();
-    if (!DOC_REF) return;
-    _saving = true;
-    const data = {
-      statuses:   state.statuses,
-      deletedIds: state.deletedIds || [],
-      approvals:  approvals,
-      extraPosts: extraPosts,
-      nextId:     nextId
+  // 1) Login anônimo antes de qualquer leitura/escrita
+  //    Requer que Authentication → Sign-in method → Anonymous esteja habilitado
+  //    E regras do Firestore: allow read, write: if request.auth != null;
+  auth.signInAnonymously()
+    .then(cred => {
+      console.log('[Firebase] ✅ auth OK, uid =', cred.user.uid);
+      wireFirestore();
+    })
+    .catch(e => {
+      console.error('[Firebase] auth error', e.code, e.message);
+      try { toast('❌ Auth: ' + e.code); } catch(_){}
+      // Sem auth, seguimos sem sync (só localStorage)
+    });
+
+  function wireFirestore() {
+    DOC_REF = db.collection('aprovai').doc('painel');
+
+    // Sobrescreve save() para gravar no Firestore também
+    const _origSave = save;
+    window.save = function() {
+      _origSave();
+      if (!DOC_REF) return;
+      _saving = true;
+      const data = {
+        statuses:   state.statuses,
+        deletedIds: state.deletedIds || [],
+        approvals:  approvals,
+        extraPosts: extraPosts,
+        nextId:     nextId
+      };
+      DOC_REF.set(data)
+        .then(() => { _saving = false; })
+        .catch(e => {
+          _saving = false;
+          console.error('[Firebase] save error', e.code, e.message);
+          try { toast('❌ Save: ' + e.code); } catch(_){}
+        });
     };
-    DOC_REF.set(data)
-      .then(() => { _saving = false; })
-      .catch(e  => { _saving = false; console.warn('[Firebase] save error', e); });
-  };
 
-  // Escuta mudanças em tempo real (outra máquina aprovou)
-  DOC_REF.onSnapshot(doc => {
-    if (_saving) return; // mudança foi nossa, ignora
-    if (!doc.exists) return;
-    const d = doc.data();
+    // Escuta mudanças em tempo real
+    DOC_REF.onSnapshot(doc => {
+      if (_saving) return;
+      if (!doc.exists) {
+        console.log('[Firebase] documento ainda não existe — será criado no 1º save()');
+        return;
+      }
+      const d = doc.data();
+      if (!d || (!d.statuses && !d.approvals)) return;
 
-    // Só aplica se tiver dados reais
-    if (!d || (!d.statuses && !d.approvals)) return;
+      const prevApprovals = JSON.stringify(approvals);
+      state.statuses   = d.statuses   || {};
+      state.deletedIds = d.deletedIds || [];
+      approvals        = d.approvals  || {};
+      extraPosts       = d.extraPosts || [];
+      nextId           = d.nextId     || 100;
 
-    const prevApprovals = JSON.stringify(approvals);
-    state.statuses   = d.statuses   || {};
-    state.deletedIds = d.deletedIds || [];
-    approvals        = d.approvals  || {};
-    extraPosts       = d.extraPosts || [];
-    nextId           = d.nextId     || 100;
+      allPosts().forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'; });
 
-    // Garante que todos os TASKS têm status
-    allPosts().forEach(t => { if (!state.statuses[t.id]) state.statuses[t.id] = 'pending'; });
+      try { localStorage.setItem('aprovai-v1', JSON.stringify(d)); } catch(e) {}
 
-    // Salva no cache local
-    try { localStorage.setItem('aprovai-v1', JSON.stringify(d)); } catch(e) {}
+      updateStats();
+      buildCalendar();
 
-    // Atualiza UI
-    updateStats();
-    buildCalendar();
-    
-    const aprovEl = document.getElementById('sec-aprovador');
-    if (aprovEl && aprovEl.classList.contains('active')) renderAprovador();
-    // Update client portal if active
-    const cpEl = document.getElementById('sec-clienteportal');
-    if (cpEl && cpEl.classList.contains('active')) {
-      const params = new URLSearchParams(window.location.search);
-      const cid = params.get('cliente');
-      if (cid) renderClientPortal(cid);
-    }
+      const aprovEl = document.getElementById('sec-aprovador');
+      if (aprovEl && aprovEl.classList.contains('active')) renderAprovador();
+      const cpEl = document.getElementById('sec-clienteportal');
+      if (cpEl && cpEl.classList.contains('active')) {
+        const params = new URLSearchParams(window.location.search);
+        const cid = params.get('cliente');
+        if (cid) renderClientPortal(cid);
+      }
 
-    // Notifica se aprovações mudaram
-    if (JSON.stringify(approvals) !== prevApprovals) {
-      toast('🔔 Atualização!');
-    }
-  }, e => console.warn('[Firebase] listener error', e));
+      if (JSON.stringify(approvals) !== prevApprovals) {
+        toast('🔔 Atualização!');
+      }
+    }, e => {
+      console.error('[Firebase] listener error', e.code, e.message);
+      try { toast('❌ Sync: ' + e.code); } catch(_){}
+    });
 
-  console.log('[Firebase] ✅ Sincronização ativa');
+    console.log('[Firebase] ✅ Sincronização ativa');
+  }
 })();
 
 </script>
