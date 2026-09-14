@@ -488,7 +488,7 @@ body.client-mode .client-portal-header{display:block;}
 .cchip-aprov-badge.ajuste  { background: var(--gold-hl);   color: var(--gold-txt);   }
 
 
-/* Type filter chips — Mariana / Mariana */
+/* Type filter chips — Agatha / Mariana */
 .chip[data-tfilter="static"].active  { background:#d63a6e; border-color:#d63a6e; color:white; }
 .chip[data-tfilter="motion"].active  { background:var(--purple); border-color:var(--purple); color:white; }
 
@@ -1096,7 +1096,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <input class="search-bar-input" id="searchInput" type="text" placeholder="Buscar post..." autocomplete="off" oninput="onSearchInput(this.value)">
     <button class="search-bar-clear" id="searchClear" onclick="clearSearch()" title="Limpar busca">×</button>
   </div>
-  <button class="chip active" data-tfilter="static" type="button"><span class="ti">▣</span><span>Mariana</span></button>
+  <button class="chip active" data-tfilter="static" type="button"><span class="ti">▣</span><span>Agatha</span></button>
   <button class="chip" data-tfilter="motion" type="button"><span class="ti">🎬</span><span>Mariana</span></button>
   <button class="chip active" data-filter="all" type="button">Todos clientes</button>
   <button class="chip active" data-tfilter="all" type="button">Todos os posts</button>
@@ -1708,8 +1708,8 @@ function taskVisible(t) {
   if (state.sf !== 'all' && state.statuses[t.id] !== state.sf) return false;
   // Dr. César é 100% Mariana — todos os posts dele entram no filtro 'motion'
   const isMariana = t.p === 'cesar' || ['reels','video','stories'].includes(t.t);
-  const isMariana = t.p !== 'cesar' && ['post','carrossel'].includes(t.t);
-  if (state.tf === 'static' && !isMariana) return false;
+  const isAgatha = t.p !== 'cesar' && ['post','carrossel'].includes(t.t);
+  if (state.tf === 'static' && !isAgatha) return false;
   if (state.tf === 'motion' && !isMariana) return false;
   return true;
 }
@@ -1747,11 +1747,11 @@ function renderTodaySummary(){
     return p.d === TODAY_DAY && m === TODAY_MONTH;
   });
   const groups = {
-    Mariana: posts.filter(p => ['adara','renato','emily'].includes(p.p)),
+    agatha: posts.filter(p => ['adara','renato','emily'].includes(p.p)),
     Mariana: posts.filter(p => ['cesar'].includes(p.p) || ['video','reels'].includes(p.t))
   };
-  const labels = {Mariana:'Mariana', Mariana:'Mariana'};
-  const colors = {Mariana:'var(--primary)', Mariana:'var(--purple)'};
+  const labels = {agatha:'Agatha', Mariana:'Mariana'};
+  const colors = {agatha:'var(--primary)', Mariana:'var(--purple)'};
   wrap.innerHTML = Object.keys(groups).map(key => {
     const items = groups[key];
     return `<div class="today-card"><div class="today-card-head"><div class="today-card-title" style="color:${colors[key]}">Hoje · ${TODAY_DAY} de ${MONTH_NAMES[TODAY_MONTH].toLowerCase()} — ${labels[key]}</div><div class="today-count">${items.length} posts</div></div><div class="today-list">${items.length ? items.map(p => `<div class="today-item"><span class="mini-dot" style="background:${CLIENTS_META[p.p].color}"></span><span>${p.title}</span></div>`).join('') : '<div class="today-item"><span>Nenhum post hoje</span></div>'}</div></div>`;
@@ -2269,7 +2269,7 @@ function showDailySummary() {
   overlay.id = 'dailyOverlay';
   overlay.innerHTML = `
     <div class="daily-box">
-      <div class="daily-greeting">${greeting}, Mariana! 👋</div>
+      <div class="daily-greeting">${greeting}, Agatha! 👋</div>
       <div class="daily-date">${dateStr}</div>
       <div class="daily-items">${items.map(i => `<div class="daily-item ${i.cls}"><span class="daily-item-icon">${i.icon}</span><span class="daily-item-text">${i.html}</span></div>`).join('')}</div>
       <button class="daily-btn" onclick="closeDailySummary()">Começar o dia 🚀</button>
