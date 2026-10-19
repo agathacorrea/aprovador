@@ -488,7 +488,7 @@ body.client-mode .client-portal-header{display:block;}
 .cchip-aprov-badge.ajuste  { background: var(--gold-hl);   color: var(--gold-txt);   }
 
 
-/* Type filter chips — Agatha / Mariana */
+/* Type filter chips — Agatha / mariana */
 .chip[data-tfilter="static"].active  { background:#d63a6e; border-color:#d63a6e; color:white; }
 .chip[data-tfilter="motion"].active  { background:var(--purple); border-color:var(--purple); color:white; }
 
@@ -1023,6 +1023,88 @@ h1,h2,h3,h4,.client-name,.client-card-title,.today-card-title,.cp-title,.form-se
 }
 .confirm-modal-inner .form-select,.confirm-modal-inner .form-input{margin-top:.35rem;}
 
+
+/* ══════════ MELHORIAS: sincronização, filtros, legenda, resumo do mês, campos novos ══════════ */
+.sync-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .6rem;border-radius:var(--r-full);border:1px solid var(--border);background:var(--surface);font-size:.6875rem;font-weight:600;color:var(--muted);white-space:nowrap;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex-shrink:0;}
+.sync-pill[data-state="synced"] .sync-dot{background:var(--success);}
+.sync-pill[data-state="connecting"] .sync-dot,.sync-pill[data-state="saving"] .sync-dot{background:var(--gold);animation:syncPulse 1s ease-in-out infinite;}
+.sync-pill[data-state="offline"],.sync-pill[data-state="error"]{color:var(--danger-txt);background:var(--danger-hl);border-color:transparent;}
+.sync-pill[data-state="offline"] .sync-dot,.sync-pill[data-state="error"] .sync-dot{background:var(--danger);}
+@keyframes syncPulse{50%{opacity:.35;}}
+@media(prefers-reduced-motion:reduce){.sync-dot{animation:none!important;}}
+@media(max-width:640px){.sync-pill:not([data-state="error"]):not([data-state="offline"]) .sync-text{display:none;}.sync-pill:not([data-state="error"]):not([data-state="offline"]){padding:.4rem;}}
+
+.filter-field{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:600;color:var(--muted);}
+.fsel{appearance:none;-webkit-appearance:none;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%237a7974' stroke-width='1.6'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right .6rem center;border:1px solid var(--border);border-radius:var(--r-full);padding:.3rem 1.7rem .3rem .75rem;font-size:.75rem;font-family:var(--font);color:var(--text);cursor:pointer;outline:none;}
+.fsel:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-hl);}
+.fsel.is-set{border-color:var(--primary);background-color:var(--primary-hl);font-weight:600;}
+.filter-clear{padding:.3rem .75rem;border-radius:var(--r-full);border:1px solid var(--danger);background:transparent;color:var(--danger-txt);font-size:.75rem;font-weight:600;font-family:var(--font);cursor:pointer;}
+.filter-clear:hover{background:var(--danger-hl);}
+.filter-clear[hidden]{display:none;}
+.filter-count{margin-left:auto;font-size:.75rem;color:var(--muted);}
+
+.week-highlight.is-away{background:var(--gold-hl);border-color:transparent;}
+.week-highlight.is-away strong{color:var(--gold-txt);}
+.cal-legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin:0 0 .75rem;font-size:.6875rem;color:var(--muted);}
+.cal-legend span{display:inline-flex;align-items:center;gap:.3rem;}
+.lg-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.cchip-dot.s-production{background:var(--purple);}
+.cchip-dot.s-approved{background:var(--success);}
+
+.month-overview{margin:0 0 .75rem;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface);}
+.month-overview>summary{cursor:pointer;list-style:none;padding:.6rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;font-size:.8125rem;font-weight:700;}
+.month-overview>summary::-webkit-details-marker{display:none;}
+.month-overview>summary::before{content:"▸";margin-right:.4rem;color:var(--muted);transition:transform .15s;display:inline-block;}
+.month-overview[open]>summary::before{transform:rotate(90deg);}
+.month-overview>summary>span:first-child{flex:1;}
+.month-overview .mo-sum{font-weight:500;color:var(--muted);font-size:.75rem;}
+.month-overview[open]>summary{border-bottom:1px solid var(--divider);}
+.mo-body{padding:.75rem .9rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem 1.5rem;}
+.mo-block h4{font-size:.75rem;font-weight:700;color:var(--muted);margin:0 0 .5rem;}
+.mo-row{display:grid;grid-template-columns:minmax(70px,120px) 1fr 1.6rem;align-items:center;gap:.5rem;font-size:.75rem;margin-bottom:.4rem;}
+.mo-row strong{text-align:right;}
+.mo-bar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--offset);}
+.mo-bar i{display:block;height:100%;}
+.mo-tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+.mo-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .55rem;border-radius:var(--r-full);border:1px solid var(--border);background:var(--surface-2);font-size:.6875rem;font-family:var(--font);color:var(--text);}
+button.mo-tag{cursor:pointer;}
+button.mo-tag:hover{border-color:var(--primary);}
+.mo-empty{font-size:.8125rem;color:var(--muted);}
+
+.mchips{display:flex;flex-wrap:wrap;gap:.375rem;}
+.mchip{padding:.3rem .75rem;border-radius:var(--r-full);border:1px solid var(--border);background:var(--surface-2);font-size:.8125rem;font-family:var(--font);color:var(--muted);cursor:pointer;}
+.mchip:hover{border-color:var(--text);color:var(--text);}
+.mchip.sel{background:var(--primary);border-color:var(--primary);color:var(--inverse);font-weight:600;}
+.post-meta-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:.35rem 0 .6rem;}
+.post-meta-tags:empty{display:none;}
+.meta-tag{display:inline-flex;padding:.15rem .55rem;border-radius:var(--r-full);background:var(--offset);color:var(--muted);font-size:.6875rem;font-weight:600;}
+.checklist-box{max-width:440px;max-height:92vh;overflow-y:auto;}
+.checklist-group{font-size:.75rem;font-weight:700;color:var(--muted);margin:.35rem 0 -.1rem;}
+.checklist-group:first-child{margin-top:0;}
+#editModal .modal-box{max-height:92vh;overflow-y:auto;}
+.chip[data-apclient][data-cc].active{background:var(--cc);border-color:var(--cc);color:#fff;}
+
+/* ══════════ DATAS COMEMORATIVAS ══════════ */
+.cal-occ{display:flex;align-items:center;justify-content:space-between;gap:.25rem;width:100%;text-align:left;margin:0 0 .2rem;padding:.15rem .35rem;border-radius:var(--r-sm);border:1px dashed var(--gold);background:var(--gold-hl);color:var(--gold-txt);font-size:.625rem;font-weight:700;line-height:1.25;font-family:var(--font);cursor:pointer;}
+.cal-occ:hover{filter:brightness(.97);}
+.cal-occ .occ-n{flex-shrink:0;min-width:14px;height:14px;padding:0 3px;border-radius:99px;background:var(--gold);color:var(--inverse);font-size:.5625rem;display:inline-flex;align-items:center;justify-content:center;}
+.cal-occ.is-covered{border-style:solid;border-color:var(--success);background:var(--success-hl);color:var(--success-txt);}
+.cal-occ.is-covered .occ-n{background:var(--success);}
+.month-campaigns{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:0 0 .6rem;font-size:.75rem;color:var(--muted);}
+.month-campaigns:empty{display:none;}
+.occ-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:var(--r-full);border:1px dashed var(--gold);background:var(--gold-hl);color:var(--gold-txt);font-size:.6875rem;font-weight:700;font-family:var(--font);cursor:pointer;}
+.occ-chip.is-covered{border-style:solid;border-color:var(--success);background:var(--success-hl);color:var(--success-txt);}
+#occAlerts .urgency-banner{align-items:center;flex-wrap:wrap;}
+#occAlerts .urgency-banner .btn-sm{margin-left:auto;}
+.occ-name{font-size:.8125rem;color:var(--muted);margin:-.25rem 0 .75rem;}
+.occ-clients{display:flex;flex-direction:column;gap:.4rem;padding:.6rem .75rem;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface-2);max-height:200px;overflow-y:auto;}
+.occ-client{display:flex;align-items:center;gap:.5rem;font-size:.875rem;cursor:pointer;}
+.occ-client input{width:16px;height:16px;accent-color:var(--primary);}
+.occ-client em{margin-left:auto;font-size:.6875rem;color:var(--success-txt);font-style:normal;font-weight:600;}
+.occ-hint{font-size:.75rem;color:var(--muted);margin:.5rem 0 .75rem;}
+.filter-check{cursor:pointer;}
+.filter-check input{width:15px;height:15px;accent-color:var(--gold);}
 </style>
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -1057,10 +1139,11 @@ document.addEventListener('DOMContentLoaded',()=>{
         </svg>
         <div>
           <div class="header-title">Calendário Editorial</div>
-          <div class="header-sub" id="headerSub">Carregando...</div>
+          <div class="header-sub" id="headerSub">&nbsp;</div>
         </div>
       </div>
       <div class="header-right">
+        <div class="sync-pill" id="syncPill" data-state="connecting" role="status" aria-live="polite" title="Conectando à nuvem…"><span class="sync-dot"></span><span class="sync-text">Conectando…</span></div>
         <div class="nav-tabs">
           <button class="nav-tab active" id="tabCal" onclick="switchSection('calendario')">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="14" height="12" rx="2"/><path d="M1 7h14M5 1v4M11 1v4"/></svg>
@@ -1089,33 +1172,63 @@ document.addEventListener('DOMContentLoaded',()=>{
     <section class="stats-section">
       <div class="client-stats-grid" id="clientStatsGrid"></div>
     </section>
-    <div class="filter-container">
+    <div class="filter-container" id="filterBar">
   <!-- BUSCA POR TÍTULO -->
-  <div class="search-bar-wrap" style="flex:1;min-width:160px;max-width:280px;">
+  <div class="search-bar-wrap" style="flex:1;min-width:160px;max-width:280px;margin-bottom:0;">
     <svg class="search-bar-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="5"/><path d="M11 11l3 3"/></svg>
-    <input class="search-bar-input" id="searchInput" type="text" placeholder="Buscar post..." autocomplete="off" oninput="onSearchInput(this.value)">
-    <button class="search-bar-clear" id="searchClear" onclick="clearSearch()" title="Limpar busca">×</button>
+    <input class="search-bar-input" id="searchInput" type="text" placeholder="Buscar post pelo título..." autocomplete="off" aria-label="Buscar post pelo título" oninput="onSearchInput(this.value)">
+    <button class="search-bar-clear" id="searchClear" onclick="clearSearch()" title="Limpar busca" aria-label="Limpar busca">×</button>
   </div>
-  <button class="chip active" data-tfilter="static" type="button"><span class="ti">▣</span><span>Agatha</span></button>
-  <button class="chip" data-tfilter="motion" type="button"><span class="ti">🎬</span><span>Mariana</span></button>
-  <button class="chip active" data-filter="all" type="button">Todos clientes</button>
-  <button class="chip active" data-tfilter="all" type="button">Todos os posts</button>
-  <button class="chip active" data-sfilter="all" type="button">Todos os status</button>
+  <label class="filter-field">Responsável
+    <select class="fsel" id="flOwner" onchange="setOwnerFilter(this.value)">
+      <option value="all">Todos</option>
+      <option value="agatha">Agatha (artes e carrosséis)</option>
+      <option value="mariana">Mariana (vídeos, Reels e Stories)</option>
+    </select>
+  </label>
+  <label class="filter-field">Status
+    <select class="fsel" id="flStatus" onchange="setStatusFilter(this.value)">
+      <option value="all">Todos</option>
+      <option value="pending">Falta iniciar</option>
+      <option value="production">Em produção</option>
+      <option value="review">Aguardando aprovação</option>
+      <option value="approved">Aprovado</option>
+      <option value="done">Programado</option>
+    </select>
+  </label>
+  <label class="filter-field filter-check" title="Mostrar ou ocultar as datas comemorativas da saúde no calendário"><input type="checkbox" id="flDates" checked onchange="setShowDates(this.checked)">Datas comemorativas</label>
+  <button type="button" class="filter-clear" id="btnClearFilters" onclick="clearAllFilters()" hidden>Limpar filtros</button>
+  <span class="filter-count" id="filterCount" aria-live="polite"></span>
 </div>
 <!-- Calendar view -->
     <div id="calView" class="cal-wrap">
-      <div class="week-highlight" id="weekHighlight">Semana atual do mês</div>
+      <div id="occAlerts"></div>
+      <div class="week-highlight" id="weekHighlight"></div>
       <div class="cal-month-nav">
-        <span class="cal-month-label" id="calMonthLabel">Abril 2026</span>
+        <span class="cal-month-label" id="calMonthLabel" aria-live="polite">&nbsp;</span>
         <div style="display:flex;gap:.375rem;align-items:center;">
-          <button class="cal-nav-btn" id="btnPrevMonth" title="Mês anterior">
+          <button class="cal-nav-btn" id="btnPrevMonth" title="Mês anterior" aria-label="Mês anterior">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 3L5 8l5 5"/></svg>
           </button>
-          <button class="cal-nav-btn" id="btnNextMonth" title="Próximo mês">
+          <button class="cal-nav-btn" id="btnNextMonth" title="Próximo mês" aria-label="Próximo mês">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 3l5 5-5 5"/></svg>
           </button>
           <button class="go-today-btn" id="btnGoToday" title="Ir para hoje">Hoje</button>
         </div>
+      </div>
+      <div class="month-campaigns" id="monthCampaigns"></div>
+      <details class="month-overview" id="monthOverview" open>
+        <summary><span>Resumo de <span id="moTitle"></span></span><span class="mo-sum" id="moSum"></span></summary>
+        <div class="mo-body" id="moBody"></div>
+      </details>
+      <div class="cal-legend" aria-label="Legenda das cores dos posts">
+        <span><i class="lg-dot" style="background:var(--faint)"></i>Falta iniciar</span>
+        <span><i class="lg-dot" style="background:var(--purple)"></i>Em produção</span>
+        <span><i class="lg-dot" style="background:var(--gold)"></i>Aguardando aprovação</span>
+        <span><i class="lg-dot" style="background:var(--success)"></i>Aprovado</span>
+        <span><i class="lg-dot" style="background:var(--primary)"></i>Programado</span>
+        <span><i class="lg-dot" style="background:var(--blue)"></i>Ajuste pedido</span>
+        <span><i class="lg-dot" style="background:var(--danger)"></i>Reprovado</span>
       </div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="today-summary" id="todaySummary"></div>
@@ -1136,10 +1249,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           <button class="chip" data-apfilter="reprovado">Reprovados</button>
           <div class="filter-sep"></div>
           <button class="chip active" data-apclient="all">Todos</button>
-          <button class="chip" data-apclient="adara"><span class="dot-chip" style="background:var(--primary)"></span>Adara</button>
-          <button class="chip" data-apclient="emily"><span class="dot-chip" style="background:var(--purple)"></span>Emily</button>
-          <button class="chip" data-apclient="renato"><span class="dot-chip" style="background:var(--blue)"></span>Dr. Renato</button>
-          <button class="chip" data-apclient="cesar"><span class="dot-chip" style="background:#8a3a2a"></span>Dr. César</button>
+          <span id="aprovClientChips" style="display:contents"></span>
         </div>
       </div>
       <div id="aprovList"></div>
@@ -1253,6 +1363,36 @@ document.addEventListener('DOMContentLoaded',()=>{
             <div class="tipo-opt" data-tipo="reels" onclick="selTipo(this)"><span class="tipo-icon">⬡</span>Reels</div>
           </div>
         </div>
+        <div class="form-field">
+          <label class="form-label">Plataformas</label>
+          <div class="mchips" id="fPlats"></div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Responsável pela criação</label>
+            <select class="form-select" id="fResp">
+              <option value="">Automático (pelo tipo de post)</option>
+              <option value="agatha">Agatha</option>
+              <option value="mariana">Mariana</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Pilar de conteúdo</label>
+            <select class="form-select" id="fPilar"></select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">CTA (chamada para ação)</label>
+          <input type="text" class="form-input" id="fCta" list="ctaList" placeholder="Ex: Agendar consulta pelo WhatsApp" maxlength="120">
+          <datalist id="ctaList">
+            <option value="Agendar consulta pelo WhatsApp"></option>
+            <option value="Agendar avaliação"></option>
+            <option value="Chamar no WhatsApp"></option>
+            <option value="Salvar e compartilhar"></option>
+            <option value="Comentar sua dúvida"></option>
+            <option value="Link na bio"></option>
+          </datalist>
+        </div>
         <div class="form-divider"></div>
         <div class="form-section-title">Conteúdo</div>
         <div class="form-field">
@@ -1319,6 +1459,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     </button>
     <div class="modal-badges" id="modalBadges"></div>
     <div class="modal-date" id="modalDate"></div>
+    <div class="post-meta-tags" id="modalMeta"></div>
     <h2 class="modal-title" id="modalTitle"></h2>
     <p class="modal-obs" id="modalObs" style="display:none"></p>
     <div class="modal-divider"></div>
@@ -1376,6 +1517,28 @@ document.addEventListener('DOMContentLoaded',()=>{
         </select>
       </div>
     </div>
+    <div class="form-field">
+      <label class="form-label">Plataformas</label>
+      <div class="mchips" id="editPlats"></div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label class="form-label">Responsável</label>
+        <select class="form-select" id="editResp">
+          <option value="">Automático (pelo tipo de post)</option>
+          <option value="agatha">Agatha</option>
+          <option value="mariana">Mariana</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Pilar de conteúdo</label>
+        <select class="form-select" id="editPilar"></select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">CTA (chamada para ação)</label>
+      <input type="text" class="form-input" id="editCta" list="ctaList" maxlength="120">
+    </div>
     <div class="form-footer" style="margin-top:.5rem;">
       <button class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
       <button class="btn-primary" onclick="saveEditPost()">
@@ -1429,10 +1592,16 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div class="checklist-title">📋 Checklist de entrega</div>
     <div class="checklist-sub">Antes de enviar para aprovação do cliente, confirme:</div>
     <div class="checklist-items">
+      <div class="checklist-group">Produção</div>
       <label class="checklist-item"><input type="checkbox" id="chk1" onchange="updateChecklist()"><span>Arte finalizada e exportada</span></label>
       <label class="checklist-item"><input type="checkbox" id="chk2" onchange="updateChecklist()"><span>Legenda revisada e sem erros</span></label>
       <label class="checklist-item"><input type="checkbox" id="chk3" onchange="updateChecklist()"><span>Link do Drive/Canva adicionado</span></label>
       <label class="checklist-item"><input type="checkbox" id="chk4" onchange="updateChecklist()"><span>Post no dia certo do calendário</span></label>
+      <label class="checklist-item"><input type="checkbox" id="chk5" onchange="updateChecklist()"><span>Hashtags e horário de publicação conferidos</span></label>
+      <div class="checklist-group">Conformidade (saúde)</div>
+      <label class="checklist-item"><input type="checkbox" id="chk6" onchange="updateChecklist()"><span>Sem promessa de resultado nem imagem de antes e depois</span></label>
+      <label class="checklist-item"><input type="checkbox" id="chk7" onchange="updateChecklist()"><span>Nome, número do conselho (CRM/CRO/CRP) e especialidade presentes, quando exigido</span></label>
+      <label class="checklist-item"><input type="checkbox" id="chk8" onchange="updateChecklist()"><span>Nenhum paciente identificável sem autorização por escrito</span></label>
     </div>
     <div class="checklist-actions">
       <button class="checklist-btn-cancel" onclick="closeChecklist()">Cancelar</button>
@@ -1502,6 +1671,43 @@ document.addEventListener('DOMContentLoaded',()=>{
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8l4 4 8-8"/></svg>
         Criar post
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: posts para data comemorativa -->
+<div class="qpost-overlay" id="occOverlay" onclick="if(event.target===this)closeOccModal()">
+  <div class="qpost-box">
+    <div class="qpost-title">Criar posts para a data comemorativa</div>
+    <div class="occ-name" id="occName"></div>
+    <div class="qpost-field">
+      <label class="qpost-label">Título do post</label>
+      <input class="qpost-input" id="occTitle" type="text" maxlength="120">
+    </div>
+    <div class="qpost-row">
+      <div>
+        <label class="qpost-label">Data de publicação</label>
+        <input class="qpost-input" id="occData" type="date">
+      </div>
+      <div>
+        <label class="qpost-label">Tipo</label>
+        <select class="qpost-select" id="occTipo">
+          <option value="post">Estático</option>
+          <option value="carrossel">Carrossel</option>
+          <option value="video">Vídeo</option>
+          <option value="stories">Stories</option>
+          <option value="reels">Reels</option>
+        </select>
+      </div>
+    </div>
+    <div class="qpost-field">
+      <label class="qpost-label">Para quais clientes?</label>
+      <div class="occ-clients" id="occClients"></div>
+    </div>
+    <div class="occ-hint">Cada cliente recebe um post separado, com o pilar "Data comemorativa". Confira a data antes de publicar.</div>
+    <div class="qpost-footer">
+      <button class="btn-secondary" onclick="closeOccModal()">Cancelar</button>
+      <button class="btn-primary" onclick="submitOccModal()">Criar posts</button>
     </div>
   </div>
 </div>
@@ -1595,7 +1801,7 @@ const TASKS = [
 // ════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════
-let state = {pf:'all', sf:'all', tf:'all', calView:'calendar', statuses:{}, openId:null, aprovFilter:'all', aprovClient:'all'};
+let state = {q:'', pf:'all', sf:'all', tf:'all', calView:'calendar', statuses:{}, openId:null, aprovFilter:'all', aprovClient:'all'};
 let approvals = {};
 let extraPosts = [];
 let nextId = 100;
@@ -1629,6 +1835,287 @@ function save() {
 }
 
 function allPosts() { const del = state.deletedIds || []; return [...TASKS.filter(t => !del.includes(t.id)), ...extraPosts]; }
+
+// ════════════════════════════════════════════
+// HELPERS (texto seguro, datas, responsável, edição)
+// ════════════════════════════════════════════
+const BASE_YEAR = 2026; // ano dos posts de exemplo (TASKS não guardam o ano)
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pad2(n) { return String(n).padStart(2, '0'); }
+function isoLocal(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function postYMD(t) {
+  if (t.dateISO) { const a = t.dateISO.split('-').map(Number); return {y:a[0], m:a[1] - 1, d:a[2]}; }
+  if (t.d == null) return null;
+  return {y: t.y || BASE_YEAR, m: t.m !== undefined ? t.m : currentMonth, d: t.d};
+}
+function postOnMonth(t, y, m) { const r = postYMD(t); return !!r && r.y === y && r.m === m; }
+function isOnDate(t, y, m, d) { const r = postYMD(t); return !!r && r.y === y && r.m === m && r.d === d; }
+function postsOfMonth(y, m) { return allPosts().filter(t => postOnMonth(t, y, m)); }
+function postISO(t) { const r = postYMD(t); return r ? r.y + '-' + pad2(r.m + 1) + '-' + pad2(r.d) : ''; }
+function fmtPostDate(t) {
+  const r = postYMD(t); if (!r) return '—';
+  return DAY_NAMES_FULL[new Date(r.y, r.m, r.d).getDay()] + ', ' + r.d + ' de ' + MONTH_NAMES[r.m].toLowerCase();
+}
+// Responsável: o que foi escolhido no post; senão, pelo tipo (vídeo/Reels/Stories e Dr. César = Mariana)
+function getOwner(t) {
+  if (t.owner === 'agatha' || t.owner === 'mariana') return t.owner;
+  const motion = t.p === 'cesar' || ['reels','video','stories'].includes(t.t);
+  return motion ? 'mariana' : 'agatha';
+}
+// Posts de exemplo (TASKS) não são gravados; ao editar/mover, viram uma cópia salva (extraPosts)
+function ensureEditable(id) {
+  const ex = extraPosts.find(p => p.id === id);
+  if (ex) return ex;
+  const base = TASKS.find(t => t.id === id);
+  if (!base) return null;
+  if (!state.deletedIds) state.deletedIds = [];
+  if (!state.deletedIds.includes(id)) state.deletedIds.push(id);
+  const newId = 'mv-' + id;
+  const copy = Object.assign({}, base, {id: newId});
+  extraPosts.push(copy);
+  state.statuses[newId] = state.statuses[id] || 'pending';
+  delete state.statuses[id];
+  if (approvals[id]) { approvals[newId] = approvals[id]; delete approvals[id]; }
+  if (notes[id] !== undefined) { notes[newId] = notes[id]; delete notes[id]; }
+  if (state.openId === id) state.openId = newId;
+  return copy;
+}
+
+// ════════════════════════════════════════════
+// DATAS COMEMORATIVAS DA SAÚDE
+// tags: todos | medico | nutro | orto | imagem | estetica | institucional
+// (cada cliente recebe as datas pela área cadastrada, ex: "Nutrologia", "Ortopedia", "Ultrassonografia")
+// month:true = campanha do mês inteiro; rule:'2thu' = 2ª quinta-feira do mês
+// ════════════════════════════════════════════
+const OCCASIONS = [
+  {id:'janeiro-branco', m:1, month:true, name:'Janeiro Branco (saúde mental)', tags:['todos']},
+  {id:'farmaceutico', m:1, d:20, name:'Dia do Farmacêutico', tags:['institucional']},
+  {id:'cancer-mundial', m:2, d:4, name:'Dia Mundial de Combate ao Câncer', tags:['todos']},
+  {id:'mamografia', m:2, d:5, name:'Dia Nacional da Mamografia', tags:['imagem']},
+  {id:'obesidade-mundial', m:3, d:4, name:'Dia Mundial da Obesidade', tags:['nutro']},
+  {id:'mulher', m:3, d:8, name:'Dia Internacional da Mulher', tags:['todos']},
+  {id:'rim', m:3, rule:'2thu', name:'Dia Mundial do Rim', tags:['nutro','institucional']},
+  {id:'atividade-fisica', m:4, d:6, name:'Dia Mundial da Atividade Física', tags:['orto','nutro']},
+  {id:'saude-mundial', m:4, d:7, name:'Dia Mundial da Saúde', tags:['todos']},
+  {id:'higiene-maos', m:5, d:5, name:'Dia Mundial da Higiene das Mãos', tags:['institucional']},
+  {id:'enfermagem', m:5, d:12, name:'Dia do Enfermeiro', tags:['institucional']},
+  {id:'fibromialgia', m:5, d:12, name:'Dia Mundial da Fibromialgia', tags:['orto']},
+  {id:'hipertensao', m:5, d:17, name:'Dia Mundial da Hipertensão', tags:['nutro']},
+  {id:'tireoide', m:5, d:25, name:'Dia Mundial da Tireoide', tags:['nutro']},
+  {id:'saude-mulher', m:5, d:28, name:'Dia de Ação pela Saúde da Mulher', tags:['nutro','institucional']},
+  {id:'junho-lipedema', m:6, month:true, name:'Mês de conscientização do Lipedema', tags:['nutro']},
+  {id:'pediatra', m:7, d:27, name:'Dia do Pediatra', tags:['institucional']},
+  {id:'agosto-dourado', m:8, month:true, name:'Agosto Dourado (amamentação)', tags:['nutro','institucional']},
+  {id:'saude-nacional', m:8, d:5, name:'Dia Nacional da Saúde', tags:['todos']},
+  {id:'colesterol', m:8, d:8, name:'Dia Nacional de Combate ao Colesterol', tags:['nutro']},
+  {id:'ultrassonografista', m:8, d:21, name:'Dia Nacional do Médico Ultrassonografista', tags:['imagem']},
+  {id:'psicologo', m:8, d:27, name:'Dia do Psicólogo', tags:['institucional']},
+  {id:'nutricionista', m:8, d:31, name:'Dia do Nutricionista', tags:['institucional','nutro']},
+  {id:'educador-fisico', m:9, d:1, name:'Dia do Educador Físico', tags:['orto','institucional']},
+  {id:'setembro-amarelo', m:9, month:true, name:'Setembro Amarelo', tags:['todos']},
+  {id:'fisioterapia-mundial', m:9, d:8, name:'Dia Mundial da Fisioterapia', tags:['orto','institucional']},
+  {id:'coracao', m:9, d:29, name:'Dia Mundial do Coração', tags:['nutro','institucional']},
+  {id:'outubro-rosa', m:10, month:true, name:'Outubro Rosa', tags:['todos']},
+  {id:'saude-mental', m:10, d:10, name:'Dia Mundial da Saúde Mental', tags:['todos']},
+  {id:'prevencao-obesidade', m:10, d:11, name:'Dia Nacional de Prevenção da Obesidade', tags:['nutro']},
+  {id:'artrite', m:10, d:12, name:'Dia Mundial da Artrite', tags:['orto']},
+  {id:'fisioterapeuta', m:10, d:13, name:'Dia do Fisioterapeuta e do Terapeuta Ocupacional', tags:['institucional','orto']},
+  {id:'alimentacao', m:10, d:16, name:'Dia Mundial da Alimentação', tags:['nutro']},
+  {id:'coluna', m:10, d:16, name:'Dia Mundial da Coluna', tags:['orto']},
+  {id:'medico', m:10, d:18, name:'Dia do Médico', tags:['medico']},
+  {id:'menopausa', m:10, d:18, name:'Dia Mundial da Menopausa', tags:['nutro']},
+  {id:'osteoporose', m:10, d:20, name:'Dia Mundial da Osteoporose', tags:['orto','nutro']},
+  {id:'dentista', m:10, d:25, name:'Dia do Dentista', tags:['institucional']},
+  {id:'novembro-azul', m:11, month:true, name:'Novembro Azul', tags:['todos']},
+  {id:'radiologia', m:11, d:8, name:'Dia Mundial da Radiologia', tags:['imagem']},
+  {id:'diabetes', m:11, d:14, name:'Dia Mundial do Diabetes', tags:['nutro','institucional']},
+  {id:'homem', m:11, d:19, name:'Dia Internacional do Homem', tags:['nutro']},
+  {id:'biomedico', m:11, d:20, name:'Dia do Biomédico', tags:['institucional']},
+  {id:'cancer-pele', m:12, d:5, name:'Dia Nacional de Combate ao Câncer de Pele', tags:['estetica','institucional']},
+  {id:'fonoaudiologo', m:12, d:9, name:'Dia do Fonoaudiólogo', tags:['institucional']}
+];
+function nthWeekday(y, m1, wd, n) { const first = new Date(y, m1 - 1, 1).getDay(); return 1 + ((wd - first + 7) % 7) + (n - 1) * 7; }
+function mkOcc(o, y) {
+  const d = o.month ? null : (o.rule === '2thu' ? nthWeekday(y, o.m, 4, 2) : o.d);
+  return Object.assign({}, o, {y: y, m0: o.m - 1, d: d, key: o.id + ':' + y, iso: d ? y + '-' + pad2(o.m) + '-' + pad2(d) : null});
+}
+function occsOfMonth(y, m0) { return OCCASIONS.filter(o => o.m === m0 + 1).map(o => mkOcc(o, y)); }
+function findOcc(id, y) { const o = OCCASIONS.find(x => x.id === id); return o ? mkOcc(o, y) : null; }
+
+let showDates = true;
+try { showDates = localStorage.getItem('aprovai-showdates') !== '0'; } catch (e) {}
+function setShowDates(v) {
+  showDates = !!v;
+  try { localStorage.setItem('aprovai-showdates', showDates ? '1' : '0'); } catch (e) {}
+  buildCalendar();
+}
+
+// Quais datas valem para cada cliente (pela área cadastrada)
+function clientTags(c) {
+  const a = ((c.area || '') + ' ' + (c.name || '')).toLowerCase();
+  const t = ['todos'];
+  const nutro = /nutr/.test(a), orto = /ortop/.test(a), imagem = /ultra|imagem|radiol/.test(a);
+  const inst = c.id === 'adara' || /integrad|instituto|cl[ií]nica|centro/.test(a);
+  if (nutro) t.push('nutro');
+  if (orto) t.push('orto');
+  if (imagem) t.push('imagem');
+  if (/est[eé]tic|dermat|bem-estar/.test(a)) t.push('estetica');
+  if (inst) t.push('institucional');
+  if (nutro || orto || imagem || inst) t.push('medico');
+  return t;
+}
+function occClients(oc) {
+  return Object.values(CLIENTS_META).filter(c => { const ct = clientTags(c); return oc.tags.some(t => ct.includes(t)); });
+}
+function occCovered(oc, clientId) { return allPosts().some(p => p.p === clientId && p.occasion === oc.key); }
+function occMissing(oc) { return occClients(oc).filter(c => !occCovered(oc, c.id)); }
+function visibleOccClients(oc) { return occClients(oc).filter(c => state.pf === 'all' || c.id === state.pf); }
+
+function occCellHtml(y, m0, day) {
+  if (!showDates) return '';
+  return occsOfMonth(y, m0).filter(oc => !oc.month && oc.d === day).map(oc => {
+    const vis = visibleOccClients(oc);
+    if (!vis.length) return '';
+    const miss = vis.filter(c => !occCovered(oc, c.id)).length;
+    const tip = oc.name + ' — ' + (miss ? miss + ' cliente(s) sem post' : 'todos os clientes têm post');
+    return `<button type="button" class="cal-occ${miss ? '' : ' is-covered'}" onclick="event.stopPropagation();openOccModal('${oc.id}',${oc.y})" title="${esc(tip)}"><span>${esc(oc.name)}</span><span class="occ-n">${miss || '✓'}</span></button>`;
+  }).join('');
+}
+function refreshOccCells() {
+  document.querySelectorAll('.cal-day[data-day]').forEach(cell => {
+    const slot = cell.querySelector('.occ-slot');
+    if (slot) slot.innerHTML = occCellHtml(currentYear, currentMonth, Number(cell.dataset.day));
+  });
+}
+function renderCampaigns() {
+  const el = document.getElementById('monthCampaigns'); if (!el) return;
+  if (!showDates) { el.innerHTML = ''; return; }
+  const list = occsOfMonth(currentYear, currentMonth).filter(oc => oc.month && visibleOccClients(oc).length);
+  el.innerHTML = list.length ? '<span>Campanhas do mês:</span>' + list.map(oc => {
+    const miss = visibleOccClients(oc).filter(c => !occCovered(oc, c.id)).length;
+    return `<button type="button" class="occ-chip${miss ? '' : ' is-covered'}" onclick="openOccModal('${oc.id}',${oc.y})" title="${miss ? miss + ' cliente(s) sem post' : 'todos os clientes têm post'}">${esc(oc.name)}${miss ? '' : ' ✓'}</button>`;
+  }).join('') : '';
+}
+// Datas dos próximos N dias (a partir de hoje)
+function upcomingOccs(days) {
+  const start = new Date(TODAY_YEAR, TODAY_MONTH, TODAY_DAY);
+  const end = new Date(TODAY_YEAR, TODAY_MONTH, TODAY_DAY + days);
+  const months = [[TODAY_YEAR, TODAY_MONTH]];
+  if (end.getMonth() !== TODAY_MONTH) months.push([end.getFullYear(), end.getMonth()]);
+  const out = [];
+  months.forEach(ym => occsOfMonth(ym[0], ym[1]).forEach(oc => {
+    if (oc.month) return;
+    const dt = new Date(oc.y, oc.m0, oc.d);
+    if (dt >= start && dt <= end) out.push(Object.assign({}, oc, {dt: dt, diff: Math.round((dt - start) / 86400000)}));
+  }));
+  return out.sort((a, b) => a.dt - b.dt);
+}
+function renderOccAlerts() {
+  const el = document.getElementById('occAlerts'); if (!el) return;
+  if (!showDates) { el.innerHTML = ''; return; }
+  const items = upcomingOccs(14).map(oc => ({oc: oc, miss: occMissing(oc)})).filter(x => x.miss.length).slice(0, 3);
+  el.innerHTML = items.map(x => {
+    const oc = x.oc;
+    const when = oc.diff === 0 ? 'hoje' : oc.diff === 1 ? 'amanhã' : 'em ' + oc.diff + ' dias (' + oc.d + '/' + pad2(oc.m) + ')';
+    const names = x.miss.slice(0, 4).map(c => esc(PL[c.id] || c.name)).join(', ') + (x.miss.length > 4 ? ' e mais ' + (x.miss.length - 4) : '');
+    return `<div class="urgency-banner${oc.diff <= 2 ? ' danger' : ''}">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="14" height="12" rx="2"/><path d="M1 7h14M5 1v4M11 1v4"/></svg>
+      <span><strong>${esc(oc.name)}</strong> é ${when} e ainda não tem post para ${names}.</span>
+      <button type="button" class="btn-sm primary accent" onclick="openOccModal('${oc.id}',${oc.y})">Criar posts</button>
+    </div>`;
+  }).join('');
+}
+function occBlockHtml() {
+  if (!showDates) return '';
+  const isPast = currentYear < TODAY_YEAR || (currentYear === TODAY_YEAR && currentMonth < TODAY_MONTH);
+  if (isPast) return '';
+  const from = (currentYear === TODAY_YEAR && currentMonth === TODAY_MONTH) ? TODAY_DAY : 1;
+  const rows = occsOfMonth(currentYear, currentMonth).filter(oc => !oc.month && oc.d >= from)
+    .map(oc => ({oc: oc, vis: visibleOccClients(oc)})).filter(x => x.vis.length).sort((a, b) => a.oc.d - b.oc.d);
+  if (!rows.length) return '';
+  const shown = rows.slice(0, 10);
+  const tags = shown.map(x => {
+    const miss = x.vis.filter(c => !occCovered(x.oc, c.id)).length;
+    const label = pad2(x.oc.d) + '/' + pad2(x.oc.m) + ' ' + esc(x.oc.name);
+    return `<button type="button" class="mo-tag" onclick="openOccModal('${x.oc.id}',${x.oc.y})" title="Criar posts para esta data">${label} <strong>${miss ? miss + ' sem post' : '✓'}</strong></button>`;
+  }).join('');
+  return `<div class="mo-block"><h4>Datas comemorativas do mês (clique para criar posts)</h4><div class="mo-tags">${tags}${rows.length > shown.length ? `<span class="mo-empty">+${rows.length - shown.length} datas</span>` : ''}</div></div>`;
+}
+
+// ── Modal: criar posts para uma data ──
+let _occCur = null;
+function openOccModal(id, y) {
+  const oc = findOcc(id, y); if (!oc) return;
+  _occCur = oc;
+  let iso = oc.iso;
+  if (!iso) iso = (y === TODAY_YEAR && oc.m0 === TODAY_MONTH) ? y + '-' + pad2(oc.m0 + 1) + '-' + pad2(TODAY_DAY) : y + '-' + pad2(oc.m0 + 1) + '-01';
+  document.getElementById('occName').textContent = oc.month
+    ? oc.name + ' — campanha do mês inteiro (escolha a data do post)'
+    : oc.name + ' — ' + oc.d + ' de ' + MONTH_NAMES[oc.m0].toLowerCase() + ' de ' + oc.y;
+  document.getElementById('occTitle').value = oc.name;
+  document.getElementById('occData').value = iso;
+  document.getElementById('occTipo').value = 'post';
+  const list = occClients(oc);
+  document.getElementById('occClients').innerHTML = list.length ? list.map(c => {
+    const done = occCovered(oc, c.id);
+    return `<label class="occ-client"><input type="checkbox" value="${esc(c.id)}"${done ? '' : ' checked'}><span class="dot-chip" style="background:${c.color}"></span><span>${esc(c.name)}</span>${done ? '<em>já tem post</em>' : ''}</label>`;
+  }).join('') : '<div class="mo-empty">Nenhum cliente combina com esta data. Preencha a área do cliente (ex: Nutrologia, Ortopedia) para ele receber as datas.</div>';
+  document.getElementById('occOverlay').classList.add('open');
+  setTimeout(() => { const t = document.getElementById('occTitle'); if (t) t.focus(); }, 50);
+}
+function closeOccModal() { document.getElementById('occOverlay').classList.remove('open'); _occCur = null; }
+function submitOccModal() {
+  const oc = _occCur; if (!oc) return;
+  const title = document.getElementById('occTitle').value.trim();
+  const data = document.getElementById('occData').value;
+  const tipo = document.getElementById('occTipo').value;
+  const ids = Array.from(document.querySelectorAll('#occClients input:checked')).map(i => i.value);
+  if (!title || !data) { toast('Preencha título e data.'); return; }
+  if (!ids.length) { toast('Escolha pelo menos um cliente.'); return; }
+  const dt = new Date(data + 'T12:00:00');
+  ids.forEach(cid => {
+    const post = {
+      id: 'o-' + nextId++, p: cid, d: dt.getDate(), m: dt.getMonth(), t: tipo,
+      title: title, caption: '', files: '', obs: 'Data comemorativa: ' + oc.name,
+      dateISO: data, horario: null, hashtags: null, platforms: ['instagram'],
+      owner: null, pillar: 'data', cta: null, occasion: oc.key
+    };
+    extraPosts.push(post);
+    state.statuses[post.id] = 'pending';
+    approvals[post.id] = {status: 'pendente', comments: []};
+  });
+  currentYear = dt.getFullYear(); currentMonth = dt.getMonth();
+  save(); buildCalendar(); updateStats(); closeOccModal();
+  toast('✓ ' + ids.length + (ids.length > 1 ? ' posts criados' : ' post criado') + ' para ' + oc.name);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOccModal(); });
+
+// Plataformas, pilares e tags do post
+const PLATFORMS = [['instagram','Instagram'],['tiktok','TikTok'],['linkedin','LinkedIn'],['youtube','YouTube'],['facebook','Facebook']];
+const PILLARS = {educativo:'Educativo', institucional:'Institucional', prova:'Prova social', data:'Data comemorativa', servico:'Serviço / procedimento'};
+function renderPlatChips(id, selected) {
+  const el = document.getElementById(id); if (!el) return;
+  const sel = new Set(selected || []);
+  el.innerHTML = PLATFORMS.map(p => `<button type="button" class="mchip${sel.has(p[0]) ? ' sel' : ''}" data-plat="${p[0]}" aria-pressed="${sel.has(p[0])}" onclick="togglePlat(this)">${p[1]}</button>`).join('');
+}
+function togglePlat(btn) { btn.classList.toggle('sel'); btn.setAttribute('aria-pressed', btn.classList.contains('sel')); }
+function getSelectedPlats(id) { return Array.from(document.querySelectorAll('#' + id + ' .mchip.sel')).map(b => b.dataset.plat); }
+function fillPilarSelects() {
+  ['fPilar', 'editPilar'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = '<option value="">Não definido</option>' + Object.keys(PILLARS).map(k => `<option value="${k}">${PILLARS[k]}</option>`).join('');
+  });
+}
+function metaTagsHtml(t, internal) {
+  const tags = [];
+  (t.platforms || []).forEach(k => { const p = PLATFORMS.find(x => x[0] === k); if (p) tags.push(p[1]); });
+  if (internal) {
+    if (t.pillar && PILLARS[t.pillar]) tags.push('Pilar: ' + PILLARS[t.pillar]);
+    tags.push('Responsável: ' + (getOwner(t) === 'mariana' ? 'Mariana' : 'Agatha'));
+  }
+  if (t.cta) tags.push('CTA: ' + t.cta);
+  return tags.map(x => `<span class="meta-tag">${esc(x)}</span>`).join('');
+}
 
 // ════════════════════════════════════════════
 // HEADER
@@ -1705,12 +2192,9 @@ function updateStats() {
 // ════════════════════════════════════════════
 function taskVisible(t) {
   if (state.pf !== 'all' && t.p !== state.pf) return false;
-  if (state.sf !== 'all' && state.statuses[t.id] !== state.sf) return false;
-  // Dr. César é 100% Mariana — todos os posts dele entram no filtro 'motion'
-  const isMariana = t.p === 'cesar' || ['reels','video','stories'].includes(t.t);
-  const isAgatha = t.p !== 'cesar' && ['post','carrossel'].includes(t.t);
-  if (state.tf === 'static' && !isAgatha) return false;
-  if (state.tf === 'motion' && !isMariana) return false;
+  if (state.sf !== 'all' && (state.statuses[t.id] || 'pending') !== state.sf) return false;
+  if (state.tf !== 'all' && getOwner(t) !== state.tf) return false;
+  if (state.q && !(t.title || '').toLowerCase().includes(state.q)) return false;
   return true;
 }
 
@@ -1728,33 +2212,37 @@ function getMonthWeekLabel(day, month=currentMonth, year=currentYear){
   const first = new Date(year, month, 1);
   const adjusted = (first.getDay() + 6) % 7;
   const week = Math.ceil((day + adjusted) / 7);
-  const start = Math.max(1, day - ((new Date(year, month, day).getDay() + 6) % 7));
-  const end = Math.min(getDaysInMonth(year, month), start + 6);
+  const rawStart = day - ((new Date(year, month, day).getDay() + 6) % 7);
+  const start = Math.max(1, rawStart);
+  const end = Math.min(getDaysInMonth(year, month), rawStart + 6);
   return {week, start, end};
 }
 function renderWeekHighlight(){
   const box = document.getElementById('weekHighlight');
   if(!box) return;
-  const refDay = (currentMonth === TODAY_MONTH && currentYear === TODAY_YEAR) ? TODAY_DAY : 1;
-  const info = getMonthWeekLabel(refDay, currentMonth, currentYear);
-  box.innerHTML = `<strong>Semana atual</strong><span>Semana ${info.week} do mês — ${info.start} a ${info.end} de ${MONTH_NAMES[currentMonth].toLowerCase()}</span>`;
+  const isCur = currentMonth === TODAY_MONTH && currentYear === TODAY_YEAR;
+  if (isCur) {
+    const info = getMonthWeekLabel(TODAY_DAY, currentMonth, currentYear);
+    box.classList.remove('is-away');
+    box.innerHTML = `<strong>Hoje</strong><span>${DAY_NAMES_FULL[NOW.getDay()]}, ${TODAY_DAY} de ${MONTH_NAMES[TODAY_MONTH].toLowerCase()} — semana ${info.week} do mês (dias ${info.start} a ${info.end})</span>`;
+  } else {
+    box.classList.add('is-away');
+    box.innerHTML = `<strong>Você está vendo</strong><span>${MONTH_NAMES[currentMonth].toLowerCase()} de ${currentYear}</span><button type="button" class="go-today-btn" style="margin-left:auto" onclick="goToToday()">Voltar para hoje</button>`;
+  }
 }
 function renderTodaySummary(){
   const wrap = document.getElementById('todaySummary');
   if(!wrap) return;
-  const posts = allPosts().filter(p => {
-    const m = (p.m !== undefined ? p.m : currentMonth);
-    return p.d === TODAY_DAY && m === TODAY_MONTH;
-  });
+  const posts = allPosts().filter(p => isOnDate(p, TODAY_YEAR, TODAY_MONTH, TODAY_DAY));
   const groups = {
-    agatha: posts.filter(p => ['adara','renato','emily'].includes(p.p)),
-    Mariana: posts.filter(p => ['cesar'].includes(p.p) || ['video','reels'].includes(p.t))
+    agatha: posts.filter(p => getOwner(p) === 'agatha'),
+    mariana: posts.filter(p => getOwner(p) === 'mariana')
   };
-  const labels = {agatha:'Agatha', Mariana:'Mariana'};
-  const colors = {agatha:'var(--primary)', Mariana:'var(--purple)'};
+  const labels = {agatha:'Agatha', mariana:'Mariana'};
+  const colors = {agatha:'var(--primary)', mariana:'var(--purple)'};
   wrap.innerHTML = Object.keys(groups).map(key => {
     const items = groups[key];
-    return `<div class="today-card"><div class="today-card-head"><div class="today-card-title" style="color:${colors[key]}">Hoje · ${TODAY_DAY} de ${MONTH_NAMES[TODAY_MONTH].toLowerCase()} — ${labels[key]}</div><div class="today-count">${items.length} posts</div></div><div class="today-list">${items.length ? items.map(p => `<div class="today-item"><span class="mini-dot" style="background:${CLIENTS_META[p.p].color}"></span><span>${p.title}</span></div>`).join('') : '<div class="today-item"><span>Nenhum post hoje</span></div>'}</div></div>`;
+    return `<div class="today-card"><div class="today-card-head"><div class="today-card-title" style="color:${colors[key]}">Hoje · ${TODAY_DAY} de ${MONTH_NAMES[TODAY_MONTH].toLowerCase()} — ${labels[key]}</div><div class="today-count">${items.length} posts</div></div><div class="today-list">${items.length ? items.map(p => `<div class="today-item"><span class="mini-dot" style="background:${CLIENTS_META[p.p].color}"></span><span>${esc(p.title)}</span></div>`).join('') : '<div class="today-item"><span>Nenhum post hoje</span></div>'}</div></div>`;
   }).join('');
 }
 
@@ -1769,6 +2257,7 @@ function buildCalendar() {
   const startOffset = firstDow === 0 ? 6 : firstDow - 1; // Mon-based offset
 
   const isCurrentMonth = currentMonth === TODAY_MONTH && currentYear === TODAY_YEAR;
+  const monthPosts = postsOfMonth(currentYear, currentMonth);
 
   // Day headers Mon-Sun
   renderWeekHighlight();
@@ -1781,18 +2270,12 @@ function buildCalendar() {
   for (let day = 1; day <= totalDays; day++) {
     const isToday = isCurrentMonth && day === TODAY_DAY;
     const isPast = isCurrentMonth ? day < TODAY_DAY : (currentYear < TODAY_YEAR || (currentYear === TODAY_YEAR && currentMonth < TODAY_MONTH));
-    const dayTasks = allPosts().filter(t => {
-      if (extraPosts.includes(t)) {
-        const d = new Date((t.dateISO ? t.dateISO + 'T12:00:00' : `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(t.d).padStart(2,'0')}`));
-        return d.getFullYear() === currentYear && d.getMonth() === currentMonth && d.getDate() === day;
-      }
-      return t.d === day && t.m === currentMonth;
-    });
+    const dayTasks = monthPosts.filter(t => postYMD(t).d === day);
 
     const MAX_VISIBLE = 4;
     let cls = 'cal-day';
     if (isToday) cls += ' is-today'; else if (isPast) cls += ' is-past';
-    html += `<div class="${cls}" data-day="${day}" data-month="${currentMonth}" data-year="${currentYear}" ondragover="calDragOver(event)" ondrop="calDrop(event,${day},${currentMonth},${currentYear})"><div class="day-num-lbl"><span class="day-num${isToday ? ' today-num' : ''}">${day}</span></div><div class="tasks-in-day">`;
+    html += `<div class="${cls}" data-day="${day}" data-month="${currentMonth}" data-year="${currentYear}" ondragover="calDragOver(event)" ondrop="calDrop(event,${day},${currentMonth},${currentYear})"><div class="day-num-lbl"><span class="day-num${isToday ? ' today-num' : ''}">${day}</span></div><div class="tasks-in-day"><div class="occ-slot">${occCellHtml(currentYear, currentMonth, day)}</div>`;
 
     dayTasks.slice(0, MAX_VISIBLE).forEach(task => {
       const st = state.statuses[task.id] || 'pending';
@@ -1805,10 +2288,10 @@ function buildCalendar() {
                  : aStatus === 'ajuste'    ? '<span class="cchip-aprov-badge ajuste">✎ Ajuste</span>'
                  : '';
       const cm2 = CLIENTS_META[task.p];
-      html += `<div class="cal-chip p-${task.p}${st === 'done' ? ' is-done' : ''}${!vis ? ' hidden' : ''}" data-id="${task.id}" draggable="true" ondragstart="calDragStart(event,'${task.id}')" onclick="openModal('${task.id}')" title="${task.title}">
+      html += `<div class="cal-chip p-${task.p}${st === 'done' ? ' is-done' : ''}${!vis ? ' hidden' : ''}" data-id="${task.id}" draggable="true" ondragstart="calDragStart(event,'${task.id}')" onclick="openModal('${task.id}')" title="${esc(task.title)}">
         <span class="cchip-avatar" style="background:${cm2 ? cm2.color : 'var(--muted)'}" title="${cm2 ? cm2.name : task.p}">${cm2 ? cm2.ic : task.p.slice(0,2).toUpperCase()}</span>
         <span class="cchip-dot ${dotCls}"></span>
-        <span class="cchip-title">${task.title}</span>
+        <span class="cchip-title">${esc(task.title)}</span>
         ${aprovLabel}
         <span class="cchip-type">${typeIcon}</span>
         <span class="cchip-edit" onclick="event.stopPropagation();openEditModalFromChip('${task.id}')" title="Editar post">✎</span>
@@ -1828,6 +2311,11 @@ function buildCalendar() {
   for (let i = 0; i < rem; i++) html += `<div class="cal-day empty"></div>`;
 
   grid.innerHTML = html;
+  highlightSearch();
+  renderMonthOverview();
+  updateFilterUI();
+  renderCampaigns();
+  renderOccAlerts();
 }
 
 // Month navigation
@@ -1845,6 +2333,96 @@ document.getElementById('btnNextMonth').addEventListener('click', () => {
 // ════════════════════════════════════════════
 // LIST VIEW
 // ════════════════════════════════════════════
+function goToToday() {
+  currentMonth = TODAY_MONTH; currentYear = TODAY_YEAR;
+  buildCalendar();
+  const el = document.querySelector('.cal-day.is-today');
+  if (el && el.scrollIntoView) el.scrollIntoView({block:'center', behavior:'smooth'});
+}
+function jumpToMonth(y, m) { currentYear = y; currentMonth = m; buildCalendar(); }
+document.getElementById('btnGoToday').addEventListener('click', goToToday);
+
+// ── Resumo do mês ──
+const ST_COLORS = {pending:'var(--faint)', production:'var(--purple)', review:'var(--gold)', approved:'var(--success)', done:'var(--primary)'};
+function renderMonthOverview() {
+  const body = document.getElementById('moBody');
+  if (!body) return;
+  const mes = MONTH_NAMES[currentMonth].toLowerCase() + ' de ' + currentYear;
+  document.getElementById('moTitle').textContent = mes;
+  const sum = document.getElementById('moSum');
+  const all = postsOfMonth(currentYear, currentMonth);
+  const posts = all.filter(taskVisible);
+  const stOf = t => state.statuses[t.id] || 'pending';
+  const occHtml = occBlockHtml();
+
+  if (!all.length) {
+    sum.textContent = 'nenhum post neste mês';
+    const keys = {};
+    allPosts().forEach(t => { const r = postYMD(t); if (r) { const k = r.y * 12 + r.m; keys[k] = (keys[k] || 0) + 1; } });
+    const cur = currentYear * 12 + currentMonth;
+    const nearest = Object.keys(keys).map(Number).sort((a, b) => Math.abs(a - cur) - Math.abs(b - cur))[0];
+    let jump = '';
+    if (nearest !== undefined) {
+      const y = Math.floor(nearest / 12), m = nearest % 12;
+      jump = `<button type="button" class="mo-tag" onclick="jumpToMonth(${y},${m})">Ver ${MONTH_NAMES[m].toLowerCase()} de ${y} (${keys[nearest]} posts)</button>`;
+    }
+    body.innerHTML = `<div class="mo-empty" style="grid-column:1/-1">Ainda não há posts em ${mes}.<div class="mo-tags" style="margin-top:.5rem"><button type="button" class="mo-tag" onclick="openQuickPost()">+ Criar post</button>${jump}</div></div>` + occHtml;
+    return;
+  }
+  if (!posts.length) {
+    sum.textContent = `0 de ${all.length} posts (filtros ativos)`;
+    body.innerHTML = `<div class="mo-empty" style="grid-column:1/-1">Nenhum post combina com os filtros escolhidos. <button type="button" class="mo-tag" onclick="clearAllFilters()">Limpar filtros</button></div>` + occHtml;
+    return;
+  }
+
+  const count = {}; Object.keys(SL).forEach(k => count[k] = 0);
+  posts.forEach(t => { count[stOf(t)] = (count[stOf(t)] || 0) + 1; });
+  const needAdj = posts.filter(t => approvals[t.id] && ['ajuste', 'reprovado'].includes(approvals[t.id].status)).length;
+  sum.textContent = `${posts.length} posts, ${count.done} programados` + (needAdj ? `, ${needAdj} com ajuste ou reprovado` : '');
+
+  const clientRows = Object.values(CLIENTS_META).map(c => {
+    const cp = posts.filter(t => t.p === c.id);
+    if (!cp.length) return '';
+    const segs = Object.keys(ST_COLORS).map(k => {
+      const n = cp.filter(t => stOf(t) === k).length;
+      return n ? `<i style="width:${(n / cp.length * 100).toFixed(1)}%;background:${ST_COLORS[k]}" title="${SL[k]}: ${n}"></i>` : '';
+    }).join('');
+    return `<div class="mo-row"><span>${esc(PL[c.id] || c.name)}</span><div class="mo-bar">${segs}</div><strong>${cp.length}</strong></div>`;
+  }).join('');
+
+  const stTags = Object.keys(SL).filter(k => count[k]).map(k =>
+    `<button type="button" class="mo-tag" onclick="setStatusFilter('${k}')" title="Filtrar por: ${SL[k]}"><span class="lg-dot" style="background:${ST_COLORS[k]}"></span>${SL[k]} <strong>${count[k]}</strong></button>`).join('');
+
+  const pc = {}; let noPillar = 0;
+  posts.forEach(t => { if (t.pillar && PILLARS[t.pillar]) pc[t.pillar] = (pc[t.pillar] || 0) + 1; else noPillar++; });
+  const pTags = Object.keys(pc).map(k => `<span class="mo-tag">${PILLARS[k]} <strong>${pc[k]}</strong></span>`).join('')
+    + (noPillar ? `<span class="mo-tag" style="color:var(--muted)">Sem pilar definido <strong>${noPillar}</strong></span>` : '');
+
+  const isPastMonth = currentYear < TODAY_YEAR || (currentYear === TODAY_YEAR && currentMonth < TODAY_MONTH);
+  let gapsHtml = '';
+  if (!isPastMonth) {
+    const total = getDaysInMonth(currentYear, currentMonth);
+    const from = (currentYear === TODAY_YEAR && currentMonth === TODAY_MONTH) ? TODAY_DAY : 1;
+    const withPost = new Set(posts.map(t => postYMD(t).d));
+    const gaps = [];
+    for (let d = from; d <= total; d++) {
+      const dow = new Date(currentYear, currentMonth, d).getDay();
+      if (dow === 0 || dow === 6) continue;
+      if (!withPost.has(d)) gaps.push(d);
+    }
+    const shown = gaps.slice(0, 14);
+    gapsHtml = `<div class="mo-block"><h4>Dias úteis sem post (clique para criar)</h4>` + (gaps.length
+      ? `<div class="mo-tags">${shown.map(d => `<button type="button" class="mo-tag" onclick="openQuickPost('${currentYear}-${pad2(currentMonth + 1)}-${pad2(d)}')">${DAY_NAMES_SHORT[new Date(currentYear, currentMonth, d).getDay()]} ${d}</button>`).join('')}${gaps.length > shown.length ? `<span class="mo-empty">+${gaps.length - shown.length} dias</span>` : ''}</div>`
+      : `<div class="mo-empty">Todos os dias úteis têm post.</div>`) + `</div>`;
+  }
+
+  body.innerHTML =
+    `<div class="mo-block"><h4>Posts por cliente</h4>${clientRows}</div>` +
+    `<div class="mo-block"><h4>Posts por status (clique para filtrar)</h4><div class="mo-tags">${stTags}</div></div>` +
+    `<div class="mo-block"><h4>Pilares de conteúdo</h4><div class="mo-tags">${pTags}</div></div>` +
+    gapsHtml + occHtml;
+}
+
 let PL = {adara:'Instituto Adara', emily:'Emily', renato:'Dr. Renato', cesar:'Dr. César'};
 Object.values(CLIENTS_META).forEach(c => { if (!(c.id in PL)) PL[c.id] = c.name; });
 
@@ -1856,12 +2434,12 @@ function openModal(id) {
   if (!task) return;
   state.openId = id;
   const st = state.statuses[id] || 'pending';
-  const dow = DAY_NAMES_FULL[getDayOfWeek(currentYear, task.m !== undefined ? task.m : currentMonth, task.d)] || '—';
   const cm = CLIENTS_META[task.p];
   document.getElementById('modalBadges').innerHTML = `
     <span class="badge-profile ${task.p}">${PL[task.p]||task.p}</span>
     <span class="badge-type">${TL[task.t]||task.t}</span>`;
-  document.getElementById('modalDate').textContent = `${dow}, ${task.d} de ${MONTH_NAMES[task.m !== undefined ? task.m : currentMonth]}`;
+  document.getElementById('modalDate').textContent = fmtPostDate(task);
+  document.getElementById('modalMeta').innerHTML = metaTagsHtml(task, true);
   document.getElementById('modalTitle').textContent = task.title;
   const obsEl = document.getElementById('modalObs');
   if (task.obs) { obsEl.textContent = '📎 ' + task.obs; obsEl.style.display = ''; }
@@ -1901,9 +2479,10 @@ function setStatus(newSt) {
 }
 
 let _checklistTargetId = null;
+function checklistBoxes() { return Array.from(document.querySelectorAll('#checklistOverlay input[type=checkbox]')); }
 function openChecklist(id) {
   _checklistTargetId = id;
-  ['chk1','chk2','chk3','chk4'].forEach(id => { const el = document.getElementById(id); if(el) el.checked = false; });
+  checklistBoxes().forEach(el => { el.checked = false; });
   updateChecklist();
   document.getElementById('checklistOverlay').classList.add('open');
 }
@@ -1912,7 +2491,7 @@ function closeChecklist() {
   _checklistTargetId = null;
 }
 function updateChecklist() {
-  const all = ['chk1','chk2','chk3','chk4'].every(id => document.getElementById(id)?.checked);
+  const all = checklistBoxes().every(el => el.checked);
   const btn = document.getElementById('checklistConfirm');
   btn.disabled = !all;
   btn.classList.toggle('ready', all);
@@ -1939,26 +2518,23 @@ function openEditModal(id) {
   if (!task) return;
   document.getElementById('editTitle').value = task.title;
   document.getElementById('editTipo').value = task.t || 'post';
-  // Build ISO date string
-  const m = task.m !== undefined ? task.m : currentMonth;
-  const d = task.d || 1;
-  const y = currentYear;
-  if (task.dateISO) {
-    document.getElementById('editDate').value = task.dateISO;
-  } else {
-    document.getElementById('editDate').value = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  }
+  document.getElementById('editDate').value = postISO(task);
+  renderPlatChips('editPlats', task.platforms || []);
+  document.getElementById('editResp').value = task.owner || '';
+  document.getElementById('editPilar').value = task.pillar || '';
+  document.getElementById('editCta').value = task.cta || '';
   document.getElementById('editModal').classList.add('open');
 }
 function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
 function saveEditPost() {
   const id = state.openId;
-  const task = allPosts().find(t => t.id === id);
-  if (!task) return;
+  if (!allPosts().find(t => t.id === id)) return;
   const newTitle = document.getElementById('editTitle').value.trim();
   const newTipo = document.getElementById('editTipo').value;
   const newDateStr = document.getElementById('editDate').value;
   if (!newTitle) { toast('Título não pode ser vazio.'); return; }
+  const task = ensureEditable(id);
+  if (!task) return;
   task.title = newTitle;
   task.t = newTipo;
   if (newDateStr) {
@@ -1967,8 +2543,11 @@ function saveEditPost() {
     task.m = dt.getMonth();
     task.dateISO = newDateStr;
   }
+  task.platforms = getSelectedPlats('editPlats');
+  task.owner = document.getElementById('editResp').value || null;
+  task.pillar = document.getElementById('editPilar').value || null;
+  task.cta = document.getElementById('editCta').value.trim() || null;
   save(); buildCalendar(); updateStats();
-  
   closeEditModal(); closeModal();
   toast('✓ Post atualizado!');
 }
@@ -1985,7 +2564,7 @@ function openDuplicateModal(id) {
   // Default date: same day
   const m = src.m !== undefined ? src.m : currentMonth;
   const d = src.d || 1;
-  document.getElementById('dupDate').value = src.dateISO || `${currentYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  document.getElementById('dupDate').value = postISO(src);
   document.getElementById('dupModal').classList.add('open');
 }
 function closeDupModal() { document.getElementById('dupModal').classList.remove('open'); _dupSourceId = null; }
@@ -2005,6 +2584,8 @@ function confirmDuplicate() {
   const copy = {
     id: newId, p: src.p, d: day, m: month, t: newTipo,
     title: newTitle, caption: src.caption || '', files: src.files || '', obs: src.obs || '',
+    platforms: (src.platforms || []).slice(), owner: src.owner || null, pillar: src.pillar || null, cta: src.cta || null,
+    horario: src.horario || null, hashtags: src.hashtags || null,
     dateISO: newDateStr || null
   };
   extraPosts.push(copy);
@@ -2057,31 +2638,31 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); }
 // ════════════════════════════════════════════
 // FILTERS
 // ════════════════════════════════════════════
-document.querySelectorAll('[data-filter]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.pf = btn.dataset.filter;
-    applyCalFilters();
-  });
-});
-document.querySelectorAll('[data-sfilter]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-sfilter]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.sf = btn.dataset.sfilter;
-    applyCalFilters();
-  });
-});
-document.querySelectorAll('[data-tfilter]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-tfilter]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.tf = btn.dataset.tfilter;
-    applyCalFilters();
-    
-  });
-});
+function anyFilterActive() { return !!state.q || state.pf !== 'all' || state.sf !== 'all' || state.tf !== 'all'; }
+function setOwnerFilter(v) { state.tf = v || 'all'; applyCalFilters(); }
+function setStatusFilter(v) { state.sf = v || 'all'; applyCalFilters(); }
+function clearAllFilters() {
+  state.q = ''; state.pf = 'all'; state.sf = 'all'; state.tf = 'all';
+  const inp = document.getElementById('searchInput'); if (inp) inp.value = '';
+  const clr = document.getElementById('searchClear'); if (clr) clr.classList.remove('visible');
+  applyCalFilters(); highlightSearch(); updateStats();
+}
+function updateFilterUI() {
+  const o = document.getElementById('flOwner'), st = document.getElementById('flStatus');
+  if (o) { o.value = state.tf; o.classList.toggle('is-set', state.tf !== 'all'); }
+  if (st) { st.value = state.sf; st.classList.toggle('is-set', state.sf !== 'all'); }
+  const clr = document.getElementById('btnClearFilters'); if (clr) clr.hidden = !anyFilterActive();
+  const fd = document.getElementById('flDates'); if (fd) fd.checked = showDates;
+  const cnt = document.getElementById('filterCount');
+  if (cnt) {
+    const all = postsOfMonth(currentYear, currentMonth);
+    const vis = all.filter(taskVisible).length;
+    const mes = MONTH_NAMES[currentMonth].toLowerCase();
+    let txt = anyFilterActive() ? `${vis} de ${all.length} posts em ${mes}` : `${all.length} posts em ${mes}`;
+    if (state.pf !== 'all' && CLIENTS_META[state.pf]) txt += ` — cliente: ${CLIENTS_META[state.pf].name}`;
+    cnt.textContent = txt;
+  }
+}
 document.querySelectorAll('[data-apfilter]').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('[data-apfilter]').forEach(b => b.classList.remove('active'));
@@ -2090,14 +2671,20 @@ document.querySelectorAll('[data-apfilter]').forEach(btn => {
     renderAprovador();
   });
 });
-document.querySelectorAll('[data-apclient]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-apclient]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.aprovClient = btn.dataset.apclient;
-    renderAprovador();
-  });
+document.getElementById('aprovFilterRow').addEventListener('click', e => {
+  const btn = e.target.closest('[data-apclient]');
+  if (!btn) return;
+  state.aprovClient = btn.dataset.apclient;
+  document.querySelectorAll('[data-apclient]').forEach(b => b.classList.toggle('active', b === btn));
+  renderAprovador();
 });
+function renderAprovClientChips() {
+  const wrap = document.getElementById('aprovClientChips'); if (!wrap) return;
+  wrap.innerHTML = Object.values(CLIENTS_META).map(c =>
+    `<button class="chip${state.aprovClient === c.id ? ' active' : ''}" data-apclient="${esc(c.id)}" data-cc style="--cc:${c.color}"><span class="dot-chip" style="background:${c.color}"></span>${esc(PL[c.id] || c.name)}</button>`).join('');
+  const all = document.querySelector('[data-apclient="all"]');
+  if (all) all.classList.toggle('active', state.aprovClient === 'all');
+}
 
 
 
@@ -2107,32 +2694,21 @@ document.querySelectorAll('[data-apclient]').forEach(btn => {
 function onSearchInput(val) {
   const clearBtn = document.getElementById('searchClear');
   if (clearBtn) clearBtn.classList.toggle('visible', val.length > 0);
-  const q = val.trim().toLowerCase();
+  state.q = (val || '').trim().toLowerCase();
+  applyCalFilters();
+  highlightSearch();
+}
+function highlightSearch() {
+  const q = state.q;
   document.querySelectorAll('.cal-chip[data-id]').forEach(el => {
-    const id = el.dataset.id;
-    const task = allPosts().find(t => t.id === id);
-    if (!task) return;
-    if (!q) {
-      el.classList.toggle('hidden', !taskVisible(task));
-      el.querySelectorAll('.search-highlight-wrap').forEach(s => {
-        s.parentNode.replaceChild(document.createTextNode(s.textContent), s);
-      });
-      return;
-    }
-    const title = task.title || '';
-    const matches = title.toLowerCase().includes(q);
-    el.classList.toggle('hidden', !matches);
-    // Highlight match in title
     const titleEl = el.querySelector('.cchip-title');
-    if (titleEl) {
-      const raw = task.title;
-      const idx = raw.toLowerCase().indexOf(q);
-      if (idx >= 0 && matches) {
-        titleEl.innerHTML = raw.slice(0,idx) + '<mark class="search-highlight">' + raw.slice(idx, idx+q.length) + '</mark>' + raw.slice(idx+q.length);
-      } else {
-        titleEl.textContent = raw;
-      }
-    }
+    const task = allPosts().find(t => t.id === el.dataset.id);
+    if (!titleEl || !task) return;
+    const raw = task.title || '';
+    const idx = q ? raw.toLowerCase().indexOf(q) : -1;
+    titleEl.innerHTML = idx >= 0
+      ? esc(raw.slice(0, idx)) + '<mark class="search-highlight">' + esc(raw.slice(idx, idx + q.length)) + '</mark>' + esc(raw.slice(idx + q.length))
+      : esc(raw);
   });
 }
 function clearSearch() {
@@ -2143,11 +2719,10 @@ function clearSearch() {
 // ════════════════════════════════════════════
 // QUICK POST MODAL
 // ════════════════════════════════════════════
-function openQuickPost() {
+function openQuickPost(iso) {
   document.getElementById('quickPostOverlay').classList.add('open');
-  const today = new Date();
-  const iso = today.toISOString().split('T')[0];
-  document.getElementById('qpData').value = iso;
+  document.getElementById('qpData').value = (typeof iso === 'string' && iso) ? iso : isoLocal(new Date());
+  if (state.pf !== 'all') { const sel = document.getElementById('qpCliente'); if (sel && !sel.value) sel.value = state.pf; }
   document.getElementById('qpTitulo').focus();
 }
 function closeQuickPost() {
@@ -2193,6 +2768,7 @@ let _dragId = null;
 function calDragStart(e, id) {
   _dragId = id;
   e.dataTransfer.effectAllowed = 'move';
+  try { e.dataTransfer.setData('text/plain', id); } catch (_) {}
 }
 function calDragOver(e) {
   e.preventDefault();
@@ -2205,26 +2781,16 @@ function calDrop(e, day, month, year) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
   if (!_dragId) return;
-  const task = allPosts().find(t => t.id === _dragId);
+  const cur = allPosts().find(t => t.id === _dragId);
+  if (!cur) { _dragId = null; return; }
+  const iso = year + '-' + pad2(month + 1) + '-' + pad2(day);
+  if (postISO(cur) === iso) { _dragId = null; return; }
+  const task = ensureEditable(_dragId);
   if (!task) { _dragId = null; return; }
-  task.d = day;
-  task.m = month;
-  task.dateISO = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-  // If it's a built-in TASKS entry, convert it to extraPost so we can mutate it
-  const isBuiltin = TASKS.find(t => t.id === _dragId);
-  if (isBuiltin) {
-    // Add a copy to extraPosts and hide the original
-    if (!state.deletedIds) state.deletedIds = [];
-    if (!state.deletedIds.includes(_dragId)) state.deletedIds.push(_dragId);
-    const newId = 'mv-' + _dragId;
-    const copy = {...isBuiltin, id: newId, d: day, m: month, dateISO: task.dateISO};
-    extraPosts.push(copy);
-    state.statuses[newId] = state.statuses[_dragId] || 'pending';
-  }
+  task.d = day; task.m = month; task.dateISO = iso;
   save(); buildCalendar(); updateStats();
-  
   _dragId = null;
-  toast('Post movido para dia ' + day);
+  toast('Post movido para ' + day + ' de ' + MONTH_NAMES[month].toLowerCase());
 }
 
 function openEditModalFromChip(id) {
@@ -2234,14 +2800,11 @@ function openEditModalFromChip(id) {
 
 function showDailySummary() {
   const today = new Date();
-  const todayKey = today.toISOString().split('T')[0];
+  const todayKey = isoLocal(today);
   if (localStorage.getItem('aprovai-daily') === todayKey) return; // já mostrou hoje
 
   const tasks = allPosts();
-  const todayPosts = tasks.filter(t => {
-    const m = t.m !== undefined ? t.m : currentMonth;
-    return t.d === TODAY_DAY && m === TODAY_MONTH;
-  });
+  const todayPosts = tasks.filter(t => isOnDate(t, TODAY_YEAR, TODAY_MONTH, TODAY_DAY));
   const ajustes = tasks.filter(t => approvals[t.id] && ['ajuste','reprovado'].includes(approvals[t.id].status));
   const pendAprov = tasks.filter(t => state.statuses[t.id] === 'review');
   const programados = tasks.filter(t => state.statuses[t.id] === 'done').length;
@@ -2260,6 +2823,10 @@ function showDailySummary() {
     items.push({cls:'alert', icon:'✎', html:`<strong>${ajustes.length} ajuste${ajustes.length>1?'s':''}</strong> solicitado${ajustes.length>1?'s':''} pelos clientes`});
   if (pendAprov.length > 0)
     items.push({cls:'info', icon:'⏳', html:`<strong>${pendAprov.length} post${pendAprov.length>1?'s':''}</strong> aguardando aprovação do cliente`});
+  if (showDates) {
+    const occSoon = upcomingOccs(7).filter(oc => occMissing(oc).length);
+    if (occSoon.length) items.push({cls:'alert', icon:'🗓', html:`<strong>Data comemorativa:</strong> ${occSoon.slice(0, 2).map(oc => esc(oc.name) + (oc.diff === 0 ? ' (hoje)' : oc.diff === 1 ? ' (amanhã)' : ' (' + oc.d + '/' + pad2(oc.m) + ')')).join(', ')} — falta criar post`});
+  }
   items.push({cls:'ok', icon:'✓', html:`<strong>${programados} de ${total}</strong> posts programados este mês`});
   if (ajustes.length === 0 && pendAprov.length === 0)
     items.push({cls:'ok', icon:'🎉', html:`Tudo em ordem! Nenhuma pendência hoje.`});
@@ -2314,6 +2881,10 @@ function applyCalFilters() {
     const btn = el.querySelector('.status-btn');
     if (btn) { btn.className = `status-btn ${st}`; btn.innerHTML = `<span class="sdot"></span>${SL[st]}`; }
   });
+  updateFilterUI();
+  renderMonthOverview();
+  refreshOccCells();
+  renderCampaigns();
 }
 
 // ════════════════════════════════════════════
@@ -2322,6 +2893,7 @@ function applyCalFilters() {
 let commentPending = {};
 
 function renderAprovador() {
+  renderAprovClientChips();
   const list = document.getElementById('aprovList');
   let posts = allPosts();
   const af = state.aprovFilter;
@@ -2351,17 +2923,17 @@ function renderAprovador() {
     const aprov = approvals[p.id] || {status:'pendente', comments:[]};
     const st = aprov.status;
     const stLabels = {pendente:'Aguardando', aprovado:'Aprovado', reprovado:'Reprovado', ajuste:'Ajuste solicitado'};
-    const dayStr = p.d ? `${DAY_NAMES_FULL[getDayOfWeek(currentYear, p.m !== undefined ? p.m : currentMonth, p.d)]}, ${p.d} de ${MONTH_NAMES[p.m !== undefined ? p.m : currentMonth]}` : '—';
+    const dayStr = fmtPostDate(p);
     // Extract client comments for highlight
     const clientComments = (aprov.comments || []).filter(c => c.from === 'cliente');
     const ajusteHighlight = st === 'ajuste' && clientComments.length
-      ? `<div class="aprov-adjust-highlight"><strong>✎ Ajuste solicitado pelo cliente</strong>${clientComments.map(c => `<div>${c.text}</div>`).join('')}</div>`
+      ? `<div class="aprov-adjust-highlight"><strong>✎ Ajuste solicitado pelo cliente</strong>${clientComments.map(c => `<div>${esc(c.text)}</div>`).join('')}</div>`
       : '';
     const commentsHtml = aprov.comments && aprov.comments.length ?
       `<div class="comments-thread">${aprov.comments.map(c => `
         <div class="comment-item">
           <div class="comment-avatar ${c.from==='cliente'?'av-client':'av-you'}">${c.from==='cliente'?'C':'V'}</div>
-          <div class="comment-bubble"><div class="comment-who">${c.from==='cliente'?(PL[p.p]||'Cliente'):'Você'} · ${c.time}</div>${c.text}</div>
+          <div class="comment-bubble"><div class="comment-who">${c.from==='cliente'?(PL[p.p]||'Cliente'):'Você'} · ${c.time}</div>${esc(c.text)}</div>
         </div>`).join('')}
       </div>` : '';
     return `<div class="aprov-card" id="acard-${p.id}">
@@ -2371,13 +2943,13 @@ function renderAprovador() {
             <span class="badge-profile ${p.p}">${PL[p.p]||p.p}</span>
             <span class="badge-type">${TL[p.t]||p.t}</span>
           </div>
-          <div class="aprov-card-title">${p.title}</div>
+          <div class="aprov-card-title">${esc(p.title)}</div>
           <div class="aprov-card-date">${dayStr}</div>
         </div>
         <span class="aprov-status ${st}"><span class="aprov-sdot"></span>${stLabels[st]}</span>
       </div>
       ${ajusteHighlight}
-      ${p.caption ? `<div class="aprov-card-body"><div class="caption-block">${p.caption.replace(/\n/g,'<br>')}</div>${p.files?`<a href="${p.files}" class="files-link" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><path d="M9 2v5h5"/></svg>Ver arquivos</a>` : ''}
+      ${p.caption ? `<div class="aprov-card-body"><div class="caption-block">${esc(p.caption).replace(/\n/g,'<br>')}</div>${p.files?`<a href="${p.files}" class="files-link" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><path d="M9 2v5h5"/></svg>Ver arquivos</a>` : ''}
       </div>` : ''}
       ${commentsHtml}
       <div class="agency-reply-zone" id="areply-${p.id}">
@@ -2620,6 +3192,10 @@ function submitPost() {
   const obs = document.getElementById('fObs').value.trim();
   const horario = document.getElementById('fHorario')?.value || '';
   const hashtags = document.getElementById('fHashtags')?.value.trim() || '';
+  const platforms = getSelectedPlats('fPlats');
+  const owner = document.getElementById('fResp')?.value || '';
+  const pillar = document.getElementById('fPilar')?.value || '';
+  const cta = document.getElementById('fCta')?.value.trim() || '';
   if (!cliente || !titulo) { toast('Preencha cliente e título.'); return; }
   let day = null, month = currentMonth;
   if (data) {
@@ -2633,7 +3209,11 @@ function submitPost() {
     title: titulo, caption: legenda, files: arquivos, obs: obs,
     dateISO: data || null,
     horario: horario || null,
-    hashtags: hashtags || null
+    hashtags: hashtags || null,
+    platforms: platforms,
+    owner: owner || null,
+    pillar: pillar || null,
+    cta: cta || null
   };
   extraPosts.push(post);
   state.statuses[post.id] = 'pending';
@@ -2648,6 +3228,8 @@ function resetForm() {
   document.querySelectorAll('.tipo-opt').forEach(e => e.classList.remove('sel'));
   document.querySelector('.tipo-opt[data-tipo="post"]').classList.add('sel');
   selectedTipo = 'post';
+  renderPlatChips('fPlats', ['instagram']);
+  ['fResp','fPilar','fCta'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 
 // ════════════════════════════════════════════
@@ -2749,13 +3331,13 @@ function renderClientPortal(clientId) {
     const st = aprov.status;
     const stLabels = {pendente:'Aguardando', aprovado:'✓ Aprovado', reprovado:'✕ Reprovado', ajuste:'↩ Ajuste'};
     const stCls = {pendente:'pendente', aprovado:'aprovado', reprovado:'reprovado', ajuste:'ajuste'};
-    const dayStr = p.d ? `${DAY_NAMES_FULL[getDayOfWeek(currentYear, p.m !== undefined ? p.m : currentMonth, p.d)]}, ${p.d} de ${MONTH_NAMES[p.m !== undefined ? p.m : currentMonth]}` : '—';
+    const dayStr = fmtPostDate(p);
 
     const commentsHtml = aprov.comments && aprov.comments.length ?
       `<div class="comments-thread" style="padding:.625rem 0 0;">${aprov.comments.map(c => `
         <div class="comment-item">
           <div class="comment-avatar ${c.from==='cliente'?'av-client':(c.from==='agencia'?'av-agency':'av-you')}">${c.from==='cliente'?'C':(c.from==='agencia'?'A':'V')}</div>
-          <div class="comment-bubble"><div class="comment-who">${c.from==='cliente'?(PL[p.p]||'Cliente'):(c.from==='agencia'?'Agência':'Você')} · ${c.time}</div>${c.text}</div>
+          <div class="comment-bubble"><div class="comment-who">${c.from==='cliente'?(PL[p.p]||'Cliente'):(c.from==='agencia'?'Agência':'Você')} · ${c.time}</div>${esc(c.text)}</div>
         </div>`).join('')}
       </div>` : '';
     const previewUrl = getPreviewUrl(p.files);
@@ -2781,12 +3363,13 @@ function renderClientPortal(clientId) {
           </a>` : '<span style="font-size:.7rem;opacity:.5;">Sem arquivos</span>'}
         </div>
         <div class="client-aprov-content">
-          <div class="client-card-title">${p.title}</div>
+          <div class="client-card-title">${esc(p.title)}</div>
           <div class="client-card-date">
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="14" height="12" rx="2"/><path d="M1 7h14M5 1v4M11 1v4"/></svg>
             ${dayStr}
           </div>
-          ${p.caption ? `<div class="client-caption">${p.caption.replace(/\n/g,'<br>')}</div>` : '<p style="font-size:.8125rem;color:var(--faint);margin-bottom:.875rem;">Legenda não cadastrada ainda.</p>'}
+          ${(p.platforms && p.platforms.length) || p.cta ? `<div class="post-meta-tags">${metaTagsHtml(p, false)}</div>` : ''}
+          ${p.caption ? `<div class="client-caption">${esc(p.caption).replace(/\n/g,'<br>')}</div>` : '<p style="font-size:.8125rem;color:var(--faint);margin-bottom:.875rem;">Legenda não cadastrada ainda.</p>'}
           ${commentsHtml}
         </div>
       </div>
@@ -3093,6 +3676,7 @@ function confirmDeleteClient() {
 
   closeDeleteClientModal();
   renderClientes();
+  renderAprovClientChips();
   buildCalendar();
   updateStats();
   toast('Cliente excluído.');
@@ -3112,11 +3696,14 @@ function refreshClientSelectors() {
     });
     sel.value = current;
   });
+  renderAprovClientChips();
 }
 
 // ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
+fillPilarSelects();
+renderPlatChips('fPlats', ['instagram']);
 refreshClientSelectors();
 buildCalendar();
 updateStats();
@@ -3161,6 +3748,34 @@ window.addEventListener('storage', function(e) {
 // FIREBASE SYNC — progressive enhancement
 // (se falhar, o app continua funcionando normalmente)
 // ════════════════════════════════════════════
+let _syncState = 'connecting', _fbReady = false;
+const SYNC_LABELS = {connecting:'Conectando…', synced:'Sincronizado', saving:'Salvando…', offline:'Sem internet', error:'Erro ao sincronizar'};
+const SYNC_HINTS = {
+  connecting:'Conectando à nuvem…',
+  synced:'Tudo salvo na nuvem e igual em todos os aparelhos.',
+  saving:'Salvando na nuvem…',
+  offline:'Sem internet. Alterações feitas agora só chegam à nuvem quando a conexão voltar; evite fechar a página.'
+};
+function setSync(st, detail) {
+  _syncState = st;
+  if (st === 'synced') _fbReady = true;
+  const el = document.getElementById('syncPill'); if (!el) return;
+  el.dataset.state = st;
+  el.querySelector('.sync-text').textContent = SYNC_LABELS[st] || st;
+  el.title = detail || SYNC_HINTS[st] || '';
+}
+function fbErrMsg(code) {
+  return ({
+    'permission-denied': 'Sem permissão para salvar na nuvem. Avise quem administra o Firebase (regras do Firestore).',
+    'unavailable': 'Sem conexão com a nuvem. As alterações ficam salvas só neste navegador por enquanto.',
+    'auth/operation-not-allowed': 'O login anônimo está desativado no Firebase.',
+    'auth/network-request-failed': 'Falha de rede ao conectar na nuvem.'
+  })[code] || ('Não foi possível sincronizar (' + code + '). Os dados continuam salvos neste navegador.');
+}
+window.addEventListener('offline', () => setSync('offline'));
+window.addEventListener('online', () => setSync(_fbReady ? 'synced' : 'connecting'));
+if (!navigator.onLine) setSync('offline');
+
 (function initFirebase() {
   const FIREBASE_CONFIG = {
     apiKey:            "AIzaSyDwEXgYi_e--O9oqmUifLVxIaqrq3ZMUOc",
@@ -3182,13 +3797,16 @@ window.addEventListener('storage', function(e) {
     auth  = firebase.auth(fbApp);
   } catch(e) {
     console.error('[Firebase] init error — usando só localStorage', e);
-    try { toast('❌ Firebase init: ' + (e.code || e.message)); } catch(_){}
+    setSync('error', 'Não foi possível iniciar a sincronização. Os dados ficam salvos só neste navegador.');
+    try { toast('⚠ Sem sincronização com a nuvem. Dados salvos só neste navegador.'); } catch(_){}
     return;
   }
 
   // 1) Login anônimo antes de qualquer leitura/escrita
   //    Requer que Authentication → Sign-in method → Anonymous esteja habilitado
   //    E regras do Firestore: allow read, write: if request.auth != null;
+  if (navigator.onLine) setSync('connecting');
+  setTimeout(() => { if (_syncState === 'connecting') setSync('error', 'A nuvem não respondeu. Os dados continuam salvos neste navegador.'); }, 12000);
   auth.signInAnonymously()
     .then(cred => {
       console.log('[Firebase] ✅ auth OK, uid =', cred.user.uid);
@@ -3196,7 +3814,8 @@ window.addEventListener('storage', function(e) {
     })
     .catch(e => {
       console.error('[Firebase] auth error', e.code, e.message);
-      try { toast('❌ Auth: ' + e.code); } catch(_){}
+      setSync('error', fbErrMsg(e.code));
+      try { toast('⚠ ' + fbErrMsg(e.code)); } catch(_){}
       // Sem auth, seguimos sem sync (só localStorage)
     });
 
@@ -3209,6 +3828,7 @@ window.addEventListener('storage', function(e) {
       _origSave();
       if (!DOC_REF) return;
       _saving = true;
+      setSync('saving');
       let _customClients = {};
       try { _customClients = JSON.parse(localStorage.getItem('customClients') || '{}'); } catch(e) {}
       const data = {
@@ -3222,16 +3842,18 @@ window.addEventListener('storage', function(e) {
         customClients:  _customClients
       };
       DOC_REF.set(data)
-        .then(() => { _saving = false; })
+        .then(() => { _saving = false; setSync('synced'); })
         .catch(e => {
           _saving = false;
           console.error('[Firebase] save error', e.code, e.message);
-          try { toast('❌ Save: ' + e.code); } catch(_){}
+          setSync('error', fbErrMsg(e.code));
+          try { toast('⚠ ' + fbErrMsg(e.code)); } catch(_){}
         });
     };
 
     // Escuta mudanças em tempo real
     DOC_REF.onSnapshot(doc => {
+      if (!_saving) setSync('synced');
       if (_saving) return;
       if (!doc.exists) {
         console.log('[Firebase] documento ainda não existe — será criado no 1º save()');
@@ -3287,7 +3909,8 @@ window.addEventListener('storage', function(e) {
       }
     }, e => {
       console.error('[Firebase] listener error', e.code, e.message);
-      try { toast('❌ Sync: ' + e.code); } catch(_){}
+      setSync('error', fbErrMsg(e.code));
+      try { toast('⚠ ' + fbErrMsg(e.code)); } catch(_){}
     });
 
     console.log('[Firebase] ✅ Sincronização ativa');
